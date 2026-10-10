@@ -16,6 +16,8 @@ export interface DataTableColumn<T> {
   strong?: boolean;
   /** Texto secundario (gris) */
   muted?: boolean;
+  /** Texto en gris cuando la celda queda vacía, por ejemplo 'Sin dirección' */
+  fallback?: string;
   /**
    * Cómo se ve en las tarjetas del celular:
    * 'title' (título), 'subtitle' (línea gris sin etiqueta),
@@ -40,6 +42,14 @@ interface DataTableProps<T> {
 
 /* Ancho "aleatorio" pero estable de las barras de carga, para que no se vean todas iguales */
 const skeletonWidth = (row: number, column: number) => `${50 + ((row * 37 + column * 23) % 40)}%`;
+
+const renderCell = <T,>(column: DataTableColumn<T>, row: T): ReactNode => {
+  const value = column.render(row);
+  const isEmpty = value === null || value === undefined || value === '';
+  return isEmpty && column.fallback
+    ? <span className={styles.fallback}>{column.fallback}</span>
+    : value;
+};
 
 /** Tabla en computadora y tablet; tarjetas en celular */
 export const DataTable = <T,>({
@@ -79,17 +89,17 @@ export const DataTable = <T,>({
               <li key={rowKey(row)} className={styles.card}>
                 <div className={styles.cardBody}>
                   {titleColumns.map((column) => (
-                    <p key={column.key} className={styles.cardTitle}>{column.render(row)}</p>
+                    <p key={column.key} className={styles.cardTitle}>{renderCell(column, row)}</p>
                   ))}
                   {subtitleColumns.map((column) => (
-                    <p key={column.key} className={styles.cardSubtitle}>{column.render(row)}</p>
+                    <p key={column.key} className={styles.cardSubtitle}>{renderCell(column, row)}</p>
                   ))}
                   {fieldColumns.length > 0 && (
                     <dl className={styles.cardFields}>
                       {fieldColumns.map((column) => (
                         <div key={column.key} className={styles.cardField}>
                           <dt>{column.header}</dt>
-                          <dd>{column.render(row)}</dd>
+                          <dd>{renderCell(column, row)}</dd>
                         </div>
                       ))}
                     </dl>
@@ -145,7 +155,7 @@ export const DataTable = <T,>({
                       className={cx(column.strong && styles.strong, column.muted && styles.muted)}
                       style={{ textAlign: column.align }}
                     >
-                      {column.render(row)}
+                      {renderCell(column, row)}
                     </td>
                   ))}
                   {actions && (

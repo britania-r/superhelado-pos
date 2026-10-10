@@ -4,6 +4,7 @@ import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { usePaymentMethods, useDeletePaymentMethod } from '../../../hooks/queries';
 import type { PaymentMethod } from '../../../types';
+import { getDeleteErrorMessage } from '../../../lib/errors';
 import { Modal } from '../../../components/ui/Modal';
 import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import { PageHeader } from '../../../components/ui/PageHeader';
@@ -12,7 +13,6 @@ import { EmptyState } from '../../../components/ui/EmptyState';
 import { Button } from '../../../components/ui/Button';
 import { IconButton } from '../../../components/ui/IconButton';
 import { PaymentMethodForm } from './components/PaymentMethodForm';
-import styles from './PaymentMethodManagementPage.module.css';
 
 const COLUMNS: DataTableColumn<PaymentMethod>[] = [
   {
@@ -28,18 +28,10 @@ const COLUMNS: DataTableColumn<PaymentMethod>[] = [
     header: 'Descripción',
     muted: true,
     mobile: 'subtitle',
-    render: (method) =>
-      method.description || <span className={styles.placeholder}>Sin descripción</span>,
+    fallback: 'Sin descripción',
+    render: (method) => method.description,
   },
 ];
-
-/* Si el método ya se usó en ventas, Postgres lo impide (y responde en inglés) */
-const deleteErrorMessage = (err: unknown) => {
-  const message = err instanceof Error ? err.message : 'Error desconocido';
-  return message.includes('foreign key')
-    ? 'tiene ventas registradas y no se puede eliminar.'
-    : message;
-};
 
 export const PaymentMethodManagementPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -76,7 +68,7 @@ export const PaymentMethodManagementPage = () => {
       await deleteMethod.mutateAsync(methodToDelete.id);
       toast.success('Método de pago eliminado con éxito.');
     } catch (err) {
-      toast.error(`Error al eliminar: ${deleteErrorMessage(err)}`);
+      toast.error(getDeleteErrorMessage(err, methodToDelete.name));
     } finally {
       setMethodToDelete(null);
     }
@@ -88,7 +80,7 @@ export const PaymentMethodManagementPage = () => {
     : `${count} ${count === 1 ? 'método registrado' : 'métodos registrados'}`;
 
   return (
-    <div className={styles.page}>
+    <div>
       <PageHeader
         title="Métodos de pago"
         subtitle={!error && subtitle}
@@ -121,7 +113,7 @@ export const PaymentMethodManagementPage = () => {
           actions={(method) => (
             <>
               <IconButton
-                icon="bx-edit-alt"
+                icon="bx-pencil"
                 label={`Editar ${method.name}`}
                 tooltip="Editar"
                 variant="brand"

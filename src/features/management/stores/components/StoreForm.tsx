@@ -3,10 +3,16 @@
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 import { createStore, updateStore } from '../../../../api/stores.api';
 import type { Store } from '../../../../types';
+import { getErrorMessage } from '../../../../lib/errors';
+import { Field } from '../../../../components/ui/Field';
+import { Input } from '../../../../components/ui/Input';
+import { Textarea } from '../../../../components/ui/Textarea';
+import { Button } from '../../../../components/ui/Button';
+import { FormActions } from '../../../../components/ui/FormActions';
 import styles from './StoreForm.module.css';
-import toast from 'react-hot-toast';
 
 interface StoreFormData {
   name: string;
@@ -44,37 +50,42 @@ export const StoreForm = ({ storeToEdit, onFormSubmit, onClose }: StoreFormProps
       await queryClient.invalidateQueries({ queryKey: ['stores'] });
       onFormSubmit(message);
       onClose();
-    } catch (err: any) {
-      toast.error(`Error: ${err.message}`);
+    } catch (err) {
+      toast.error(`Error: ${getErrorMessage(err)}`);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-      <div className={styles.formGroup}>
-        <label htmlFor="name">Nombre de la Tienda</label>
-        <input
-          id="name"
-          type="text"
-          {...register("name", { required: "El nombre es obligatorio" })}
-          className={styles.input}
+    <form onSubmit={handleSubmit(onSubmit)} className={styles.form} noValidate>
+      <Field label="Nombre" htmlFor="store-name" error={errors.name?.message} required>
+        <Input
+          id="store-name"
+          icon="bx-store-alt"
+          placeholder="Tienda Centro"
+          autoComplete="off"
           disabled={isSubmitting}
+          {...register('name', { required: 'El nombre es obligatorio' })}
         />
-        {errors.name && <span className={styles.errorText}>{errors.name.message}</span>}
-      </div>
-      <div className={styles.formGroup}>
-        <label htmlFor="address">Dirección (opcional)</label>
-        <textarea
-          id="address"
-          {...register("address")}
+      </Field>
+
+      <Field label="Dirección" htmlFor="store-address" hint="Opcional.">
+        <Textarea
+          id="store-address"
           rows={3}
-          className={styles.input}
+          placeholder="Av. Principal 123"
           disabled={isSubmitting}
-        ></textarea>
-      </div>
-      <button type="submit" disabled={isSubmitting} className={styles.submitButton}>
-        {isSubmitting ? 'Guardando...' : 'Guardar Tienda'}
-      </button>
+          {...register('address')}
+        />
+      </Field>
+
+      <FormActions>
+        <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+          Cancelar
+        </Button>
+        <Button type="submit" loading={isSubmitting}>
+          {storeToEdit ? 'Guardar cambios' : 'Crear tienda'}
+        </Button>
+      </FormActions>
     </form>
   );
 };

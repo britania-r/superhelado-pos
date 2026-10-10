@@ -64,6 +64,12 @@
   color: var(--text-2);
 }
 
+/* Celda vacía ("Sin descripción", "Sin dirección"…) */
+.fallback {
+  color: var(--text-3);
+  font-style: italic;
+}
+
 /* Columna de acciones: lo justo, pegada a la derecha */
 .table .actionsCell {
   width: 1%;

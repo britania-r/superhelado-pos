@@ -1,0 +1,120 @@
+/* src/components/ui/Button.module.css */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  height: var(--control-h);
+  padding: 0 var(--space-md);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease-out),
+    color var(--dur) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Mientras carga se ve normal (no "apagado"), solo bloqueado */
+.button[aria-busy='true'] {
+  cursor: progress;
+  opacity: 1;
+}
+
+.label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.icon {
+  font-size: 1.2em;
+  line-height: 1;
+}
+
+/* ── Variantes ── */
+.primary {
+  background-color: var(--brand-blue);
+  color: var(--text-on-brand);
+}
+.primary:hover:not(:disabled) {
+  background-color: var(--brand-blue-hover);
+}
+
+.accent {
+  background-color: var(--brand-pink);
+  color: var(--brand-ink);
+}
+.accent:hover:not(:disabled) {
+  background-color: var(--brand-pink-hover);
+}
+
+.secondary {
+  background-color: var(--bg-surface);
+  border-color: var(--border-2);
+  color: var(--brand-blue);
+}
+.secondary:hover:not(:disabled) {
+  background-color: var(--brand-blue-50);
+  border-color: var(--brand-blue);
+}
+
+.ghost {
+  background-color: transparent;
+  color: var(--text-1);
+}
+.ghost:hover:not(:disabled) {
+  background-color: var(--bg-hover);
+}
+
+.danger {
+  background-color: var(--danger);
+  color: var(--text-on-brand);
+}
+.danger:hover:not(:disabled) {
+  background-color: var(--danger-hover);
+}
+.danger:focus-visible {
+  box-shadow: var(--focus-ring-danger);
+}
+
+/* ── Tamaños ── */
+.sm {
+  height: var(--control-h-sm);
+  padding: 0 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-sm);
+}
+
+.lg {
+  height: var(--control-h-lg);
+  padding: 0 1.25rem;
+  font-size: var(--fs-lg);
+}
+
+.fullWidth {
+  width: 100%;
+}

@@ -1,37 +1,262 @@
-.container {
+/* src/features/auth/LoginPage.module.css */
+
+/* ════════════════════════════════════════════════════════════════
+   Celular y tablet (base): banda azul arriba, formulario abajo
+   ════════════════════════════════════════════════════════════════ */
+
+.page {
+  min-height: 100dvh;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: var(--color-bg);
-  padding: var(--space-md);
+  flex-direction: column;
+  background-color: var(--bg-page);
 }
 
-.loginBox {
-  background-color: var(--color-surface);
-  padding: var(--space-xl);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-md);
+/* ── Panel de marca ── */
+.brandPanel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-sm);
+  padding: calc(var(--space-xl) + env(safe-area-inset-top)) var(--space-lg) 4.5rem;
+  background-color: var(--brand-blue);
+  color: var(--text-on-brand);
+  text-align: center;
+}
+
+/* Burbujas rosadas de fondo, muy sutiles */
+.brandPanel::before,
+.brandPanel::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  border-radius: 50%;
+  background-color: var(--brand-pink);
+  opacity: 0.16;
+}
+
+.brandPanel::before {
+  width: 220px;
+  height: 220px;
+  top: -90px;
+  right: -70px;
+}
+
+.brandPanel::after {
+  width: 120px;
+  height: 120px;
+  top: 40%;
+  left: -50px;
+}
+
+/* Placa blanca para el logo, como el letrero de la tienda */
+.logoSign {
+  display: inline-flex;
+  padding: 12px 18px;
+  border-radius: var(--radius-xl);
+  background-color: var(--bg-surface);
+  box-shadow: 0 12px 28px -14px rgba(20, 26, 70, 0.55);
+}
+
+.logo {
+  display: block;
+  width: min(170px, 48vw);
+}
+
+.pitch {
+  margin-top: var(--space-md);
+}
+
+/* En celular el titular grande se oculta: solo queda la frase corta */
+.headline {
+  display: none;
+}
+
+.pitchText {
+  max-width: 30ch;
+  font-size: var(--fs-sm);
+  color: var(--brand-blue-soft);
+}
+
+/* Estrella magenta, como el "BUY 1 GET 1" del flyer (solo escritorio) */
+.badge {
+  display: none;
+}
+
+/* Borde inferior en forma de nubes, en color crema para fundirse con la página */
+.clouds {
+  position: absolute;
+  left: -20px;
+  right: -20px;
+  bottom: -1px;
+  height: 30px;
+  background:
+    radial-gradient(circle at 50% 100%, var(--bg-page) 26px, transparent 27px) 0 2px / 52px 30px repeat-x,
+    radial-gradient(circle at 50% 100%, var(--bg-page) 18px, transparent 19px) 26px 10px / 52px 20px repeat-x;
+}
+
+/* ── Panel del formulario ── */
+.formPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-md) var(--space-md) calc(var(--space-lg) + env(safe-area-inset-bottom));
+}
+
+.card {
   width: 100%;
-  max-width: 450px;
+  max-width: 420px;
+  padding: var(--space-lg) var(--space-lg) var(--space-xl);
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
 }
 
-.loginBox h2 {
-  color: var(--color-text-primary);
-  margin-bottom: 0;
-}
-
-.loginBox p {
-  color: var(--color-text-secondary);
+.cardHeader {
   margin-bottom: var(--space-lg);
 }
 
-.logoIcon {
-  font-size: 3rem;
-  color: var(--color-primary);
-  margin-bottom: var(--space-sm);
+.title {
+  font-size: var(--fs-2xl);
+  font-weight: 600;
+}
+
+.subtitle {
+  margin-top: var(--space-xs);
+  color: var(--text-2);
+}
+
+.footer {
+  margin-top: auto;
+  padding-top: var(--space-lg);
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+
+/* Tablet vertical: centra el formulario en el espacio libre */
+@media (min-width: 600px) and (max-width: 899px) {
+  .card {
+    margin-top: auto;
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Escritorio: dos columnas
+   ════════════════════════════════════════════════════════════════ */
+
+@media (min-width: 900px) {
+  .page {
+    display: grid;
+    grid-template-columns: minmax(400px, 1.05fr) 1fr;
+  }
+
+  .brandPanel {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: var(--space-2xl) var(--space-2xl) 11rem;
+    text-align: left;
+  }
+
+  .brandPanel::before {
+    width: 420px;
+    height: 420px;
+    top: -160px;
+    right: -140px;
+  }
+
+  .brandPanel::after {
+    width: 180px;
+    height: 180px;
+    top: 38%;
+    left: -70px;
+  }
+
+  .logoSign {
+    padding: 16px 24px;
+  }
+
+  .logo {
+    width: 200px;
+  }
+
+  .pitch {
+    margin-top: 0;
+  }
+
+  .headline {
+    display: block;
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 4.2vw, 3.75rem);
+    font-weight: 700;
+    line-height: 1.02;
+    color: var(--brand-pink);
+  }
+
+  .pitchText {
+    max-width: 34ch;
+    margin-top: var(--space-md);
+    font-size: var(--fs-lg);
+  }
+
+  .badge {
+    position: absolute;
+    right: 10%;
+    bottom: 5.5rem;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 132px;
+    aspect-ratio: 1;
+    padding: var(--space-md);
+    background-color: var(--brand-magenta);
+    color: var(--text-on-brand);
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.1;
+    text-align: center;
+    transform: rotate(-10deg);
+    clip-path: polygon(50.0% 0.0%, 58.7% 12.0%, 71.7% 5.0%, 74.3% 19.5%, 89.1% 18.8%, 85.1% 33.1%, 98.7% 38.9%, 89.0% 50.0%, 98.7% 61.1%, 85.1% 66.9%, 89.1% 81.2%, 74.3% 80.5%, 71.7% 95.0%, 58.7% 88.0%, 50.0% 100.0%, 41.3% 88.0%, 28.3% 95.0%, 25.7% 80.5%, 10.9% 81.2%, 14.9% 66.9%, 1.3% 61.1%, 11.0% 50.0%, 1.3% 38.9%, 14.9% 33.1%, 10.9% 18.8%, 25.7% 19.5%, 28.3% 5.0%, 41.3% 12.0%);
+  }
+
+  /* Banda de nubes rosadas al pie del panel, como en el flyer */
+  .clouds {
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 120px;
+    background: var(--brand-pink); /* reemplaza las nubes crema del celular */
+  }
+
+  .clouds::before {
+    content: '';
+    position: absolute;
+    left: -30px;
+    right: -30px;
+    top: -40px;
+    height: 42px;
+    background:
+      radial-gradient(circle at 50% 100%, var(--brand-pink) 40px, transparent 41px) 0 0 / 80px 42px repeat-x,
+      radial-gradient(circle at 50% 100%, var(--brand-pink) 26px, transparent 27px) 40px 14px / 80px 28px repeat-x;
+  }
+
+  .formPanel {
+    justify-content: center;
+    padding: var(--space-2xl) var(--space-xl) var(--space-lg);
+  }
+
+  .card {
+    margin-top: auto;
+    padding: var(--space-xl) var(--space-xl) var(--space-xl);
+  }
+
+  .title {
+    font-size: var(--fs-3xl);
+  }
 }

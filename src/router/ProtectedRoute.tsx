@@ -2,12 +2,13 @@
 
 import { Navigate, Outlet } from 'react-router-dom';
 import { useUserStore } from '../store/userStore';
+import { FullScreenLoader } from '../components/ui/FullScreenLoader';
 
 export const ProtectedRoute = () => {
   const { user, isLoading } = useUserStore();
 
   if (isLoading) {
-    return <div>Cargando...</div>;
+    return <FullScreenLoader />;
   }
 
   if (!user) {

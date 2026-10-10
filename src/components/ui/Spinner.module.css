@@ -1,0 +1,27 @@
+/* src/components/ui/Spinner.module.css */
+
+.spinner {
+  display: inline-block;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border-style: solid;
+  border-color: currentColor;
+  border-right-color: transparent;
+  animation: spin 0.7s linear infinite;
+}
+
+.sm { width: 14px; height: 14px; border-width: 2px; }
+.md { width: 20px; height: 20px; border-width: 2px; }
+.lg { width: 32px; height: 32px; border-width: 3px; }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Con "menos movimiento" sigue girando, pero lento (si se detiene parece colgado) */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 1.6s !important;
+    animation-iteration-count: infinite !important;
+  }
+}

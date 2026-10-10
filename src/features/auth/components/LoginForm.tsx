@@ -1,8 +1,37 @@
-import { useForm, type SubmitHandler } from 'react-hook-form'; 
-import { supabase } from '../../../config/supabaseClient';
-import type { LoginData } from '../../../types'; 
+// src/features/auth/components/LoginForm.tsx
+
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useState } from 'react';
-import styles from './LoginForm.module.css'; 
+import { supabase } from '../../../config/supabaseClient';
+import type { LoginData } from '../../../types';
+import { Field } from '../../../components/ui/Field';
+import { Input } from '../../../components/ui/Input';
+import { Button } from '../../../components/ui/Button';
+import styles from './LoginForm.module.css';
+
+/* Supabase responde en inglés: lo pasamos a mensajes claros en español */
+const toFriendlyError = (err: unknown): string => {
+  const e = (err ?? {}) as { code?: string; status?: number; message?: string; error_description?: string };
+  const raw = e.error_description || e.message || '';
+  const text = raw.toLowerCase();
+
+  if (e.code === 'invalid_credentials' || text.includes('invalid login credentials')) {
+    return 'Correo o contraseña incorrectos.';
+  }
+  if (e.code === 'email_not_confirmed' || text.includes('email not confirmed')) {
+    return 'Tu correo todavía no está confirmado.';
+  }
+  if (e.code === 'user_banned') {
+    return 'Tu usuario está bloqueado. Habla con un administrador.';
+  }
+  if (e.status === 429 || e.code?.startsWith('over_') || text.includes('rate limit')) {
+    return 'Demasiados intentos. Espera un momento y vuelve a probar.';
+  }
+  if (text.includes('failed to fetch') || text.includes('network')) {
+    return 'No hay conexión. Revisa tu internet e inténtalo de nuevo.';
+  }
+  return raw || 'No se pudo iniciar sesión. Inténtalo de nuevo.';
+};
 
 export const LoginForm = () => {
   const [error, setError] = useState<string | null>(null);
@@ -19,46 +48,54 @@ export const LoginForm = () => {
       });
 
       if (error) throw error;
-      
-
-    } catch (error: any) {
-      setError(error.error_description || error.message);
+    } catch (err) {
+      setError(toFriendlyError(err));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(handleLogin)} className={styles.form}>
-      {error && <p className={styles.errorMessage}>{error}</p>}
-      
-      <div className={styles.formGroup}>
-        <label htmlFor="email">Correo Electrónico</label>
-        <input
+    // noValidate: sin burbujas nativas del navegador; valida react-hook-form
+    <form onSubmit={handleSubmit(handleLogin)} className={styles.form} noValidate>
+      {error && (
+        <div className={styles.alert} role="alert">
+          <i className="bx bx-error-circle" aria-hidden="true" />
+          <span>{error}</span>
+        </div>
+      )}
+
+      <Field label="Correo electrónico" htmlFor="email" error={errors.email?.message}>
+        <Input
           id="email"
           type="email"
-          placeholder="tu@email.com"
-          {...register('email', { required: 'El correo es obligatorio' })}
-          className={styles.input}
+          size="lg"
+          icon="bx-envelope"
+          placeholder="tu@correo.com"
+          autoComplete="email"
+          inputMode="email"
+          {...register('email', {
+            required: 'El correo es obligatorio',
+            pattern: { value: /^\S+@\S+\.\S+$/, message: 'Escribe un correo válido' },
+          })}
         />
-        {errors.email && <p className={styles.validationError}>{errors.email.message}</p>}
-      </div>
+      </Field>
 
-      <div className={styles.formGroup}>
-        <label htmlFor="password">Contraseña</label>
-        <input
+      <Field label="Contraseña" htmlFor="password" error={errors.password?.message}>
+        <Input
           id="password"
           type="password"
+          size="lg"
+          icon="bx-lock-alt"
           placeholder="••••••••"
+          autoComplete="current-password"
           {...register('password', { required: 'La contraseña es obligatoria' })}
-          className={styles.input}
         />
-        {errors.password && <p className={styles.validationError}>{errors.password.message}</p>}
-      </div>
+      </Field>
 
-      <button type="submit" disabled={loading} className={styles.button}>
-        {loading ? 'Iniciando...' : 'Iniciar Sesión'}
-      </button>
+      <Button type="submit" size="lg" fullWidth loading={loading} className={styles.submit}>
+        {loading ? 'Ingresando…' : 'Iniciar sesión'}
+      </Button>
     </form>
   );
 };

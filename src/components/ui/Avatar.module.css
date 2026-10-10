@@ -1,0 +1,39 @@
+/* src/components/ui/Avatar.module.css */
+
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  user-select: none;
+}
+
+.sm {
+  width: 28px;
+  height: 28px;
+  font-size: 11px;
+}
+
+.md {
+  width: 36px;
+  height: 36px;
+  font-size: 13px;
+}
+
+.blue {
+  background-color: var(--brand-blue-soft);
+  color: var(--brand-blue);
+}
+
+.pink {
+  background-color: var(--brand-pink-soft);
+  color: var(--brand-magenta-ink);
+}
+
+.cream {
+  background-color: #F4EFD9;
+  color: var(--brand-ink);
+}

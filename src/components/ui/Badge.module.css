@@ -1,0 +1,50 @@
+/* src/components/ui/Badge.module.css */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.icon {
+  font-size: 14px;
+}
+
+.neutral {
+  background-color: var(--bg-subtle);
+  color: var(--text-2);
+  box-shadow: inset 0 0 0 1px var(--border-1);
+}
+
+.brand {
+  background-color: var(--brand-blue-soft);
+  color: var(--brand-blue);
+}
+
+.accent {
+  background-color: var(--brand-pink-soft);
+  color: var(--brand-magenta-ink);
+}
+
+.success {
+  background-color: var(--success-soft);
+  color: var(--success-ink);
+}
+
+.warning {
+  background-color: var(--warning-soft);
+  color: var(--warning-ink);
+}
+
+.danger {
+  background-color: var(--danger-soft);
+  color: var(--danger-ink);
+}

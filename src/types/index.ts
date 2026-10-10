@@ -7,6 +7,8 @@ export type LoginData = {
 
 export type Profile = {
   id: string;
+  /** Lo traen las consultas de profiles.api (select id, email, full_name…) */
+  email?: string | null;
   full_name: string | null;
   role: 'admin' | 'vendedor';
   store_id: string | null;

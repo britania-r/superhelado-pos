@@ -1,45 +1,23 @@
+/* src/features/management/users/components/UserForm.module.css */
+
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
 }
 
-.formGroup {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+/* Dos columnas en computadora; una en celular */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
 }
 
-.formGroup label {
-  font-weight: 500;
+.full {
+  grid-column: 1 / -1;
 }
 
-.formGroup input,
-.formGroup select {
-  width: 100%;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  font-size: 0.9rem;
-}
-
-.errorText {
-  color: var(--color-error);
-  font-size: 0.8rem;
-}
-
-.submitButton {
-  align-self: flex-end;
-  padding: 0.75rem 1.5rem;
-  background-color: var(--color-primary);
-  color: var(--color-text-on-primary);
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.submitButton:disabled {
-  background-color: var(--color-primary-light);
-  cursor: not-allowed;
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

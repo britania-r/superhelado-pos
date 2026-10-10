@@ -1,190 +1,351 @@
-.toggleButton {
-  background: none;
-  border: none;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  font-size: 1.6rem; /* Icono más grande */
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  right: -14px;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 50%;
-  width: 28px; /* Botón más grande */
-  height: 28px; /* Botón más grande */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease-in-out, right 0.3s ease-in-out;
-  z-index: 10;
-}
+/* src/components/layout/Sidebar.module.css */
 
-
-
+/* El ancho sale de --sidebar-w, definido en MainLayout */
 .sidebar {
-  width: 250px;
-  background-color: var(--color-surface);
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding: var(--space-lg) 0;
-  border-right: 1px solid var(--color-border);
   position: fixed;
   top: 0;
+  bottom: 0;
   left: 0;
-  transition: width 0.3s ease; 
+  z-index: var(--z-sticky);
+  display: flex;
+  flex-direction: column;
+  width: var(--sidebar-w, 248px);
+  background-color: var(--brand-blue);
+  color: var(--brand-blue-soft);
+  transition: width var(--dur-slow) var(--ease-out);
+}
+
+/* ── Marca ── */
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: var(--space-lg) var(--space-md) var(--space-md);
 }
 
 .brand {
+  display: inline-flex;
+  border-radius: var(--radius-lg);
+}
+
+.brand:hover {
+  text-decoration: none;
+}
+
+.brand:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 2px;
+}
+
+/* Placa blanca: el logo tiene partes índigo que se pierden sobre el azul */
+.logoSign {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-surface);
+  box-shadow: 0 8px 20px -12px rgba(20, 26, 70, 0.6);
+  transition: padding var(--dur-slow) var(--ease-out);
+}
+
+.logoFull {
+  display: block;
+  width: 132px;
+}
+
+.logoMark {
+  display: none;
+  width: 22px;
+}
+
+/* Botón para contraer (solo escritorio): círculo sobre el borde.
+   ".header" delante: así gana a los estilos base del IconButton sin depender del orden de carga */
+.header .collapseButton {
+  position: absolute;
+  top: 36px;
+  right: -14px;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.header .collapseButton i {
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+/* ── Enlaces ── */
+.nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-sm) var(--space-md);
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+.group + .group {
+  margin-top: var(--space-md);
+}
+
+.groupLabel {
+  padding: 0 0.75rem;
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(232, 235, 246, 0.6);
+  white-space: nowrap;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+}
+
+.link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: 42px;
+  padding: 0 0.75rem;
+  border-radius: var(--radius-md);
+  color: var(--brand-blue-soft);
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
+}
+
+.link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  text-decoration: none;
+}
+
+.link:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 1px;
+}
+
+.active,
+.active:hover {
+  background-color: var(--brand-pink);
+  color: var(--brand-ink);
+  font-weight: 600;
+}
+
+.linkIcon {
+  flex-shrink: 0;
+  font-size: 20px;
+}
+
+.linkText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Usuario ── */
+.footer {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: 0 var(--space-lg);
-  margin-bottom: var(--space-xl);
-  font-size: 1.25rem;
-  font-weight: 500;
-  color: var(--color-text-primary);
-  position: relative;
-  white-space: nowrap; 
+  padding: var(--space-md);
+  padding-bottom: calc(var(--space-md) + env(safe-area-inset-bottom));
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.brandIcon {
-  font-size: 1.8rem;
-  color: var(--color-primary);
-}
-
-.nav {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.navLink {
+.user {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-md) var(--space-lg);
-  color: var(--color-text-secondary);
-  font-weight: 500;
-  text-decoration: none !important; 
-  border: none;
-  background: none;
-  width: 100%;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.2s, color 0.2s;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--brand-pink);
+  color: var(--brand-ink);
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+}
+
+.userText {
+  min-width: 0;
+}
+
+.userName,
+.userMeta {
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
- }
-
-.navLink:hover {
-  background-color: var(--color-bg);
-  color: var(--color-text-primary);
 }
 
-.navLink.active {
-  background-color: var(--color-primary);
-  color: var(--color-text-on-primary);
-  font-weight: 500;
-  position: relative;
+.userName {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: #FFFFFF;
 }
 
-.navLink.active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background-color: var(--color-primary-dark);
+.userMeta {
+  font-size: var(--fs-xs);
+  color: rgba(232, 235, 246, 0.75);
 }
 
-.navLink i {
-  font-size: 1.4rem;
-}
+/* ════════════════════════════════════════════════════════════════
+   Escritorio (≥ 1024px): fijo a la izquierda, se puede contraer
+   ════════════════════════════════════════════════════════════════ */
+@media (min-width: 1024px) {
+  .header .closeButton {
+    display: none;
+  }
 
-.logout {
-  padding: 0 var(--space-lg);
-  margin-top: auto;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-
-
-
-.toggleButton:hover {
-  color: var(--color-primary);
-}
-
-.sidebar.collapsed {
-  width: 88px;
-}
-
-.sidebar.collapsed .navLink span,
-.sidebar.collapsed .brand span {
-  display: none;
-}
-
-.sidebar.collapsed .navLink {
-  justify-content: center;
-  padding: var(--space-md) 0;
-}
-
-.sidebar.collapsed .logout {
-  visibility: hidden;
-  opacity: 0;
-}
-
-.sidebar.collapsed .toggleButton {
-  transform: translateY(-50%) rotate(180deg);
-}
-
-.sidebar.collapsed .brand {
-  justify-content: center;
-  padding: 0;
-}
-
-.confirmContent {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-lg);
-    text-align: center;
-    padding: var(--space-md);
-}
-
-.confirmContent p {
-    font-size: 1.1rem;
-    color: var(--color-text-primary);
-}
-
-.confirmActions {
-    display: flex;
+  .collapsed .header {
     justify-content: center;
-    gap: var(--space-md);
+    padding-inline: var(--space-sm);
+  }
+
+  .collapsed .logoSign {
+    padding: 8px 10px;
+  }
+
+  .collapsed .logoFull {
+    display: none;
+  }
+
+  .collapsed .logoMark {
+    display: block;
+  }
+
+  .collapsed .header .collapseButton i {
+    transform: rotate(180deg);
+  }
+
+  /* Sin scroll para que los tooltips puedan salir del menú */
+  .collapsed .nav {
+    overflow: visible;
+    padding-inline: var(--space-sm);
+  }
+
+  /* El título del grupo se vuelve una línea divisoria */
+  .collapsed .groupLabel {
+    height: 1px;
+    margin: 0 0.75rem var(--space-sm);
+    padding: 0;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.16);
+    color: transparent;
+  }
+
+  .collapsed .link {
+    justify-content: center;
+    width: 44px;
+    margin-inline: auto;
+    padding: 0;
+  }
+
+  /* El texto queda solo para lectores de pantalla */
+  .collapsed .linkText {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+
+  .collapsed .footer {
+    flex-direction: column;
+    padding-inline: var(--space-sm);
+  }
+
+  .collapsed .userText {
+    display: none;
+  }
+
+  .collapsed .user {
+    flex: none;
+  }
+
+  /* Tooltips con el nombre de cada opción */
+  .collapsed .link::after,
+  .collapsed .footer .logoutButton::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 14px);
+    z-index: var(--z-drawer);
+    padding: 5px 9px;
+    border-radius: var(--radius-sm);
+    background-color: var(--brand-ink);
+    color: #FFFFFF;
+    font-family: var(--font-body);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    white-space: nowrap;
+    box-shadow: var(--shadow-md);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-4px, -50%);
+    transition: opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
+  }
+
+  .collapsed .link:hover::after,
+  .collapsed .link:focus-visible::after,
+  .collapsed .footer .logoutButton:hover::after,
+  .collapsed .footer .logoutButton:focus-visible::after {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
 }
 
-.cancelButton, .confirmButton {
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--border-radius);
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: background-color 0.2s, color 0.2s;
-}
+/* ════════════════════════════════════════════════════════════════
+   Celular y tablet (< 1024px): panel que entra desde la derecha
+   ════════════════════════════════════════════════════════════════ */
+@media (max-width: 1023.98px) {
+  .sidebar {
+    left: auto;
+    right: 0;
+    z-index: var(--z-drawer);
+    width: min(300px, 86vw);
+    border-radius: var(--radius-xl) 0 0 var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    transform: translateX(100%);
+    visibility: hidden;
+    transition:
+      transform var(--dur-slow) var(--ease-out),
+      visibility 0s linear var(--dur-slow);
+  }
 
-.cancelButton {
-    background-color: var(--color-bg);
-    color: var(--color-text-secondary);
-    border: 1px solid var(--color-border);
-}
-.cancelButton:hover {
-    background-color: var(--color-border);
-}
+  .open {
+    transform: none;
+    visibility: visible;
+    transition: transform var(--dur-slow) var(--ease-out);
+  }
 
-.confirmButton {
-    background-color: var(--color-error);
-    color: var(--color-text-on-primary);
-}
-.confirmButton:hover {
-    background-color: #f74545;
+  .header {
+    padding-top: calc(var(--space-md) + env(safe-area-inset-top));
+  }
+
+  .header .collapseButton {
+    display: none;
+  }
+
+  .link {
+    height: 46px; /* más alto, para tocar con el dedo */
+  }
 }

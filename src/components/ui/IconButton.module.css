@@ -1,0 +1,86 @@
+/* src/components/ui/IconButton.module.css */
+
+.button {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease-out),
+    color var(--dur) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out);
+}
+
+.button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ── Tamaños ── */
+.md {
+  width: var(--control-h);
+  height: var(--control-h);
+  font-size: 20px;
+}
+
+.sm {
+  width: var(--control-h-sm);
+  height: var(--control-h-sm);
+  border-radius: var(--radius-sm);
+  font-size: 18px;
+}
+
+/* ── Variantes ── */
+.ghost {
+  color: var(--text-2);
+}
+.ghost:hover:not(:disabled) {
+  background-color: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.secondary {
+  background-color: var(--bg-surface);
+  border-color: var(--border-1);
+  color: var(--text-2);
+  box-shadow: var(--shadow-xs);
+}
+.secondary:hover:not(:disabled) {
+  border-color: var(--brand-blue);
+  color: var(--brand-blue);
+}
+
+.danger {
+  color: var(--danger);
+}
+.danger:hover:not(:disabled) {
+  background-color: var(--danger-soft);
+  color: var(--danger-ink);
+}
+.danger:focus-visible {
+  box-shadow: var(--focus-ring-danger);
+}
+
+/* Sobre fondos azules (sidebar) */
+.onBrand {
+  color: var(--brand-blue-soft);
+}
+.onBrand:hover:not(:disabled) {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+}
+.onBrand:focus-visible {
+  box-shadow: 0 0 0 2px #FFFFFF;
+}

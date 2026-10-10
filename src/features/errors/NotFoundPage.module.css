@@ -1,0 +1,36 @@
+/* src/features/errors/NotFoundPage.module.css */
+
+.page {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  text-align: center;
+  background-color: var(--bg-page);
+}
+
+.mark {
+  width: 64px;
+  margin-bottom: var(--space-sm);
+  transform: rotate(-12deg);
+}
+
+.code {
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 14vw, 6.5rem);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--brand-pink);
+}
+
+.title {
+  margin-top: var(--space-sm);
+  font-size: var(--fs-2xl);
+}
+
+.text {
+  margin: var(--space-xs) 0 var(--space-lg);
+  color: var(--text-2);
+}

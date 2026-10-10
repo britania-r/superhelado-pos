@@ -12,8 +12,8 @@ const SOURCES = {
   mark: { src: '/brand/chepys-mark.webp', width: 150, height: 256 },
 } as const;
 
-/* El tamaño lo define quien lo usa (con className); width/height
-   solo reservan la proporción para que la página no "salte" al cargar. */
+/* El tamaño lo define quien lo usa con className (ancho o alto);
+   width/height solo reservan la proporción para que la página no "salte". */
 export const Logo = ({ variant = 'full', className, alt = 'Helados Chepys' }: LogoProps) => {
   const { src, width, height } = SOURCES[variant];
   return (
@@ -25,7 +25,6 @@ export const Logo = ({ variant = 'full', className, alt = 'Helados Chepys' }: Lo
       className={className}
       decoding="async"
       draggable={false}
-      style={{ height: 'auto' }}
     />
   );
 };

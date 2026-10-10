@@ -26,7 +26,8 @@
   margin-top: 1px;
 }
 
-.submit {
+/* ".form" delante: gana a los estilos base del Button */
+.form .submit {
   margin-top: var(--space-xs);
 }
 

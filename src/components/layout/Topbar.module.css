@@ -1,0 +1,61 @@
+/* src/components/layout/Topbar.module.css */
+
+.topbar {
+  display: none;
+}
+
+@media (max-width: 1023.98px) {
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-sm);
+    height: calc(56px + env(safe-area-inset-top));
+    padding: env(safe-area-inset-top) var(--space-sm) 0 var(--space-md);
+    border-bottom: 1px solid var(--border-1);
+    background-color: rgba(252, 250, 241, 0.92);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+
+  .start {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-width: 0;
+  }
+
+  .brand {
+    display: inline-flex;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+  }
+
+  .logo {
+    display: block;
+    width: auto;
+    height: 34px;
+  }
+
+  /* Nombre de la sección, separado del logo por una línea */
+  .section {
+    overflow: hidden;
+    padding-left: var(--space-sm);
+    border-left: 1px solid var(--border-2);
+    font-family: var(--font-display);
+    font-size: var(--fs-lg);
+    font-weight: 600;
+    color: var(--text-1);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ".topbar" delante: gana a los estilos base del IconButton */
+  .topbar .menuButton {
+    font-size: 24px;
+    color: var(--text-1);
+  }
+}

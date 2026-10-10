@@ -14,7 +14,8 @@ import { PaymentMethodManagementPage } from '../features/management/payment-meth
 import { SaleManagementPage } from '../features/sales/SaleManagementPage';
 import { SaleDetailPage } from '../features/sales/SaleDetailPage';
 import { ReportsPage } from '../features/reports/ReportsPage';
-import { DailyCashPage } from '../features/reports/DailyCashPage'; 
+import { DailyCashPage } from '../features/reports/DailyCashPage';
+import { NotFoundPage } from '../features/errors/NotFoundPage';
 
 export const AppRouter = () => {
   return (
@@ -47,5 +48,3 @@ export const AppRouter = () => {
     </BrowserRouter>
   );
 };
-
-const NotFoundPage = () => <div>404 - Página no encontrada</div>;

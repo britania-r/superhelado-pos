@@ -1,0 +1,4 @@
+.ticket { width: 80mm; font-family: monospace; font-size: 10pt; }
+.row   { display: flex; justify-content: space-between; }
+.center{ text-align: center; }
+@media print { body { margin: 0; } }

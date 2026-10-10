@@ -1,0 +1,129 @@
+/* src/features/reports/DailyCashPage.module.css */
+.container {
+  padding: var(--space-lg);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: var(--space-xl);
+}
+
+.header h1 {
+  margin-bottom: var(--space-md);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  align-items: center;
+}
+
+.selectInput, .dateInput {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.fetchButton {
+  padding: 0.6rem 1.2rem;
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.fetchButton:disabled {
+  background-color: var(--color-primary-light);
+  cursor: not-allowed;
+}
+
+.reportContent {
+  background-color: var(--color-surface);
+  padding: var(--space-lg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  min-height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto; /* Para tablas anchas */
+  width: 100%;
+}
+
+/* Estilos de tabla generales */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap; /* Evita que las celdas se rompan */
+}
+
+.table th, .table td {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.table th {
+  background-color: var(--color-bg);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Ajustes de ancho de columna para Daily Cash Summary */
+.table th:nth-child(1), .table td:nth-child(1) { flex: 1.5 1 0%; } /* Tienda */
+.table th:nth-child(2), .table td:nth-child(2) { flex: 1.5 1 0%; } /* Fecha */
+.table th:nth-child(3), .table td:nth-child(3) { flex: 1 1 0%; }   /* Apertura */
+.table th:nth-child(4), .table td:nth-child(4) { flex: 1.5 1 0%; } /* Ventas del Día */
+.table th:nth-child(5), .table td:nth-child(5) { flex: 1.5 1 0%; } /* Total del Día */
+
+
+/* Estilos de estado */
+.loadingState, .errorState, .emptyState {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--color-text-secondary);
+}
+
+.errorState {
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+/* --- AÑADIDO: Estilos para el botón de acción de caja --- */
+.shiftActions {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-lg);
+}
+
+.actionButton {
+    background-color: var(--color-primary);
+    color: var(--color-text-on-primary);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    transition: background-color 0.2s;
+}
+
+.actionButton:hover {
+    background-color: var(--color-primary-dark);
+}

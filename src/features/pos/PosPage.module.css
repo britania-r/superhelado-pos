@@ -1,0 +1,96 @@
+/* src/features/pos/PosPage.module.css */
+.posPage {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--space-lg);
+  height: calc(100vh - (var(--space-xl) * 2));
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden; 
+}
+
+.topSection {
+  flex-shrink: 0;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+}
+
+.searchBar {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  width: 300px;
+}
+
+.categoryNav {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  overflow-x: auto;
+  padding-bottom: var(--space-sm);
+}
+
+.categoryNav button {
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.categoryNav button.active {
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border-color: var(--color-primary);
+}
+
+.productGridContainer {
+  flex-grow: 1; 
+  overflow-y: auto; 
+  padding-right: var(--space-sm); 
+  margin-right: -17px; 
+  padding-right: 17px; 
+}
+
+.sidebar {
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; 
+}
+
+.storeSelector {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  margin-right: var(--space-md);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.missingStoreError {
+  text-align: center;
+  padding: var(--space-xl);
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-error);
+  margin-top: var(--space-lg);
+}

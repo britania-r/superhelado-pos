@@ -1,0 +1,26 @@
+/* src/features/pos/components/ProductGrid.module.css */
+.grid {
+  /* --- MODIFICADO: Forzamos exactamente 5 columnas de igual ancho --- */
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); 
+  
+  gap: var(--space-md);
+  
+  /* --- ELIMINADO: Overflow-y y padding-right no van aquí, van en el padre (productGridContainer) --- */
+  /* overflow-y: scroll; */
+  /* padding-right: var(--space-sm); */
+
+  flex-grow: 1; /* Esto es para el layout flex del padre */
+  justify-content: flex-start;
+  align-content: flex-start;
+}
+
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-text-secondary);
+  font-style: italic;
+  grid-column: 1 / -1; /* Ocupa todas las columnas del grid */
+}

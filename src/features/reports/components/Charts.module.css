@@ -1,0 +1,10 @@
+/* src/features/reports/components/Charts.module.css */
+.chartWrapper {
+  height: 400px;
+  width: 100%;
+  padding-top: var(--space-md);
+  margin-bottom: var(--space-lg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -1,0 +1,148 @@
+/* src/features/management/stores/StoreManagementPage.module.css */
+.container {
+  padding: var(--space-lg);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xl);
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.addButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.6rem 1.2rem;
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.content {
+  /* No es un grid de 2 columnas como antes */
+  /* El contenido principal será la tabla que ocupa todo el ancho */
+  display: block; 
+}
+
+.tableContainer {
+  background-color: var(--color-surface);
+  padding: var(--space-lg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  width: 100%; /* La tabla ocupa todo el ancho */
+}
+
+.tableContainer h3 {
+  margin-bottom: var(--space-lg);
+  color: var(--color-text-primary);
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  display: table;
+  table-layout: fixed; /* Asegura que el ancho de columna se respete */
+}
+
+.table thead, .table tbody {
+  display: block;
+}
+
+.table tbody tr {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px solid var(--color-border);
+}
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+.table thead tr {
+  display: flex;
+  width: 100%;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.table th, .table td {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  flex: 1; 
+  border-bottom: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- CORREGIDO: Ajustes de ancho de columna para Tiendas --- */
+.table th:nth-child(1), .table td:nth-child(1) { flex: 2 1 0%; } /* Nombre */
+.table th:nth-child(2), .table td:nth-child(2) { flex: 3 1 0%; } /* Dirección */
+.table th:nth-child(3), .table td:nth-child(3) { flex: 1 1 0%; justify-content: center; } /* Acciones */
+
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.actionButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-xs);
+  font-size: 1.4rem; 
+  color: var(--color-text-secondary);
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionButton:hover {
+    color: var(--color-primary);
+}
+
+.deleteButton:hover {
+    color: var(--color-error);
+}
+
+.deleteButton {
+  color: var(--color-error);
+}
+
+/* Estados de la página */
+.loadingState, .errorState, .emptyState {
+  text-align: center;
+  padding: var(--space-xl);
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-lg);
+}
+
+.errorState {
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+.emptyState p {
+  margin-bottom: var(--space-md);
+}

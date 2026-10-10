@@ -1,0 +1,118 @@
+/* src/features/sales/SaleDetailPage.module.css */
+
+.container {
+  padding: var(--space-lg);
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.backButton:hover {
+  text-decoration: underline;
+}
+
+.backButton i {
+  font-size: 1.2rem;
+}
+
+.header h1 {
+  margin-bottom: var(--space-xl);
+}
+
+.saleSummary {
+  background-color: var(--color-surface);
+  padding: var(--space-lg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: var(--space-xl);
+}
+
+.saleSummary p {
+  margin-bottom: var(--space-sm);
+  font-size: 1.1rem;
+}
+
+.saleSummary strong {
+  color: var(--color-text-primary);
+  margin-right: var(--space-xs);
+}
+
+.itemsTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  margin-top: var(--space-lg);
+}
+
+.itemsTable th, .itemsTable td {
+  padding: var(--space-md);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.itemsTable th {
+  color: var(--color-text-secondary);
+  font-weight: 600;
+}
+
+.itemsTable tr:last-child td {
+  border-bottom: none;
+}
+
+.itemImage {
+  width: 40px;
+  height: 40px;
+  object-fit: fill;
+  border-radius: var(--border-radius);
+}
+
+.itemImagePlaceholder {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--border-radius);
+  background-color: var(--color-bg);
+  border: 1px dashed var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  font-size: 1.2rem;
+}
+
+.loadingState, .errorState, .emptyState {
+  text-align: center;
+  padding: var(--space-xl);
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-lg);
+}
+
+.errorState {
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+.noItems {
+  background-color: var(--color-surface);
+  padding: var(--space-md);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text-secondary);
+  font-style: italic;
+  text-align: center;
+}

@@ -1,0 +1,53 @@
+/* src/features/sales/SalesSummaryReceipt.module.css */
+
+/* Estilos pensados para una impresora térmica de 80mm */
+.ticket {
+  width: 80mm; /* Ancho estándar de ticket */
+  font-family: 'monospace'; /* Fuente monoespaciada para impresión */
+  font-size: 10px; /* Tamaño de letra pequeño */
+  line-height: 1.4;
+  color: black; /* Texto negro para imprimir */
+  padding: 5mm;
+  box-sizing: border-box; /* Incluye padding en el ancho */
+  background-color: white; /* Fondo blanco */
+}
+
+.center {
+  text-align: center;
+  margin: 1mm 0;
+}
+
+.modalTitle { /* Aseguramos que el título del modal también se alinee */
+  text-align: center;
+}
+
+.separator {
+  text-align: center;
+  margin: 2mm 0;
+}
+
+.itemRowHeader, .itemRow {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr; /* Producto, Cantidad, Total */
+  gap: 2mm;
+  margin-bottom: 1mm;
+}
+
+.itemRowHeader {
+  font-weight: bold;
+  border-bottom: 1px dashed black;
+  padding-bottom: 1mm;
+  margin-bottom: 2mm;
+}
+
+.colProd { text-align: left; }
+.colQty { text-align: center; }
+.colSales { text-align: right; }
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: bold;
+  margin-top: 2mm;
+}

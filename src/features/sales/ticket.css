@@ -1,0 +1,7 @@
+.ticket { width: 80mm; font-family: 'Courier New', monospace; font-size: 12px; padding: 4mm; }
+.center { text-align: center; margin: 0 0 3mm; }
+.row { display: flex; justify-content: space-between; }
+.row.head { font-weight: bold; }
+.prod { flex: 1 1 auto; word-break: break-word; }
+hr { border: none; border-top: 1px dashed #000; margin: 2mm 0; }
+.row.total { font-weight: bold; }

@@ -1,0 +1,165 @@
+/* src/features/management/categories/CategoryManagementPage.module.css */
+
+.container {
+  padding: var(--space-lg);
+}
+
+.container h1 {
+  margin-bottom: var(--space-xl);
+}
+
+.header { /* Nuevo estilo para el header */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xl);
+}
+
+.addButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.6rem 1.2rem;
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.content {
+  /* display: grid; */ /* ELIMINADO: Ya no es un grid de 2 columnas */
+  /* grid-template-columns: 1fr 2fr; */ /* ELIMINADO */
+  /* gap: var(--space-xl); */ /* ELIMINADO */
+  display: block; /* Ocupa el ancho completo */
+}
+
+.formContainer, .tableContainer {
+  background-color: var(--color-surface);
+  padding: var(--space-lg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  width: 100%; /* Asegura que la tabla ocupe todo el ancho */
+}
+
+.formContainer h3, .tableContainer h3 {
+  margin-bottom: var(--space-lg);
+  color: var(--color-text-primary);
+}
+
+/* El .form ahora vive en el CategoryForm.module.css */
+/* .form { ... } */
+
+.input {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.button:disabled {
+  background-color: var(--color-primary-light);
+  cursor: not-allowed;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  display: table; /* Para que el thead y tbody funcionen correctamente */
+  table-layout: fixed;
+}
+
+.table thead, .table tbody {
+  display: block;
+}
+
+.table tbody tr {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px solid var(--color-border);
+}
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+.table thead tr {
+  display: flex;
+  width: 100%;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.table th, .table td {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  flex: 1; 
+  border-bottom: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ajustes de ancho de columna para Category */
+.table th:nth-child(1), .table td:nth-child(1) { flex: 4 1 0%; } /* Nombre */
+.table th:nth-child(2), .table td:nth-child(2) { flex: 1 1 0%; justify-content: center; } /* Acciones */
+
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.actionButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-xs);
+  font-size: 1.4rem; 
+  color: var(--color-text-secondary);
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionButton:hover {
+    color: var(--color-primary);
+}
+
+.deleteButton:hover {
+    color: var(--color-error);
+}
+
+.deleteButton {
+  color: var(--color-error);
+}
+
+/* --- AÑADIDO: Estilos para los estados de la página --- */
+.emptyState {
+  text-align: center;
+  padding: var(--space-xl);
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-lg);
+}

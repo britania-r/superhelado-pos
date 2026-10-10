@@ -1,0 +1,186 @@
+/* src/features/management/products/components/ProductForm.module.css */
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.formGroup label {
+  font-weight: 500;
+}
+
+.formGroup input,
+.formGroup select,
+.formGroup textarea {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+}
+
+.errorText {
+  color: var(--color-error);
+  font-size: 0.8rem;
+}
+
+/* Texto de ayuda bajo "Disponible en Tiendas y Precios" */
+.helpText {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+.fileUploadBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-background-soft);
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+  text-align: center;
+}
+
+.fileUploadBox:hover {
+  background-color: var(--color-surface);
+  border-color: var(--color-primary);
+}
+
+.fileUploadBox i {
+  font-size: 2rem;
+  color: var(--color-primary);
+}
+
+.fileUploadBox span {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  word-break: break-all; /* Para nombres de archivo largos */
+}
+
+.fileUploadBox input[type="file"] {
+  display: none;
+}
+
+.imagePreview {
+  margin-top: var(--space-sm);
+}
+
+.imagePreview p {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-xs);
+}
+
+.imagePreview img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+}
+
+
+.storeSelectionGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+  background-color: var(--color-bg);
+  padding: var(--space-md);
+  border-radius: var(--border-radius);
+}
+
+.storeItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--space-sm); /* Padding reducido para mejor alineación */
+  background-color: var(--color-surface);
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+
+.storeItemChecked {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+/* Tienda asignada pero oculta en el POS (va después de .storeItemChecked para ganarle) */
+.storeItemInactive {
+  border-style: dashed;
+  border-color: var(--color-text-secondary);
+  box-shadow: none;
+  background-color: var(--color-bg);
+}
+
+.storeItemHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer; /* Hace que todo el label sea clickeable */
+  padding: 0.5rem; /* Padding para hacer el área clickeable más grande */
+}
+
+
+.storeItemHeader span {
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.priceInput {
+  padding: 0.6rem !important; /* Mismo padding que otros inputs */
+  font-size: 1rem !important;
+  font-weight: 600;
+  text-align: center;
+  border-color: var(--color-primary-light);
+  width: 100%; /* Ocupa todo el ancho de su contenedor */
+  box-sizing: border-box; /* Importante para el cálculo del ancho */
+}
+
+/* Contenedor del switch "Visible en POS" */
+.storeItemFooter {
+  display: flex;
+  justify-content: center;
+  padding-bottom: var(--space-xs);
+}
+
+
+.submitButton {
+  align-self: flex-end;
+  margin-top: var(--space-md);
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.submitButton:disabled {
+  background-color: var(--color-primary-light);
+  cursor: not-allowed;
+}

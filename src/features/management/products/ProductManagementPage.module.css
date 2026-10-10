@@ -1,0 +1,255 @@
+/* src/features/management/products/ProductManagementPage.module.css */
+
+.container {
+  padding: var(--space-lg);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-md);
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  gap: var(--space-md);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.storeFilter, .searchBar {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.addButton {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0.6rem 1.2rem;
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  display: table;
+  table-layout: fixed;
+  margin-top: var(--space-md);
+  max-height: calc(100vh - 300px);
+  overflow-y: scroll;
+  margin-right: -17px;
+  padding-right: 17px;
+}
+
+.table thead, .table tbody {
+  display: block;
+}
+
+.table tbody tr {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.table thead tr {
+  display: flex;
+  width: 100%;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.table th, .table td {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  border-bottom: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.table th:nth-child(1), .table td:nth-child(1) { flex: 0 0 80px; }
+.table th:nth-child(2), .table td:nth-child(2) { flex: 2.5 1 0%; }
+.table th:nth-child(3), .table td:nth-child(3) { flex: 1.5 1 0%; }
+.table th:nth-child(4), .table td:nth-child(4) { flex: 2 1 0%; } /* más ancho: precio + estado */
+.table th:nth-child(5), .table td:nth-child(5) { flex: 1 1 0%; justify-content: flex-start; }
+
+.productImage {
+  width: 50px;
+  height: 50px;
+  object-fit: fill;
+  border-radius: var(--border-radius);
+  display: block;
+}
+
+.productImagePlaceholder {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--border-radius);
+  background-color: var(--color-bg);
+  border: 1px dashed var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  font-size: 1.4rem;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.actionButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-xs);
+  font-size: 1.4rem;
+  color: var(--color-text-secondary);
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionButton:hover {
+  color: var(--color-primary);
+}
+
+.deleteButton:hover {
+  color: #c53030;
+}
+
+.deleteButton {
+  color: var(--color-error);
+}
+
+.viewPricesButton {
+  background-color: var(--color-bg);
+  color: var(--color-primary-dark);
+  border: 1px solid var(--color-primary-light);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.viewPricesButton:hover {
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+}
+
+/* Celda de precios: botón + píldora de estado */
+.priceCell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 0;
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.statusPillActive {
+  background-color: rgba(72, 187, 120, 0.15); /* --color-success suavizado */
+  color: #2F855A;
+}
+
+.statusPillInactive {
+  background-color: rgba(245, 101, 101, 0.15); /* --color-error suavizado */
+  color: #C53030;
+}
+
+.paginationTop {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--space-xs) var(--space-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  align-self: flex-end;
+  margin-bottom: var(--space-md);
+  justify-content: flex-end;
+}
+
+.paginationButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-xs);
+  color: var(--color-primary);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paginationButton:disabled {
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.loadingState, .errorState, .emptyState {
+  text-align: center;
+  padding: var(--space-xl);
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-lg);
+}
+
+.errorState {
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+.emptyState p {
+  margin-bottom: var(--space-md);
+}

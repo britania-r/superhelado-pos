@@ -1,0 +1,190 @@
+.toggleButton {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 1.6rem; /* Icono más grande */
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: -14px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  width: 28px; /* Botón más grande */
+  height: 28px; /* Botón más grande */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease-in-out, right 0.3s ease-in-out;
+  z-index: 10;
+}
+
+
+
+.sidebar {
+  width: 250px;
+  background-color: var(--color-surface);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-lg) 0;
+  border-right: 1px solid var(--color-border);
+  position: fixed;
+  top: 0;
+  left: 0;
+  transition: width 0.3s ease; 
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0 var(--space-lg);
+  margin-bottom: var(--space-xl);
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  position: relative;
+  white-space: nowrap; 
+}
+
+.brandIcon {
+  font-size: 1.8rem;
+  color: var(--color-primary);
+}
+
+.nav {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  text-decoration: none !important; 
+  border: none;
+  background: none;
+  width: 100%;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.2s, color 0.2s;
+  white-space: nowrap;
+ }
+
+.navLink:hover {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+}
+
+.navLink.active {
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  font-weight: 500;
+  position: relative;
+}
+
+.navLink.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--color-primary-dark);
+}
+
+.navLink i {
+  font-size: 1.4rem;
+}
+
+.logout {
+  padding: 0 var(--space-lg);
+  margin-top: auto;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+
+
+
+.toggleButton:hover {
+  color: var(--color-primary);
+}
+
+.sidebar.collapsed {
+  width: 88px;
+}
+
+.sidebar.collapsed .navLink span,
+.sidebar.collapsed .brand span {
+  display: none;
+}
+
+.sidebar.collapsed .navLink {
+  justify-content: center;
+  padding: var(--space-md) 0;
+}
+
+.sidebar.collapsed .logout {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.sidebar.collapsed .toggleButton {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+.sidebar.collapsed .brand {
+  justify-content: center;
+  padding: 0;
+}
+
+.confirmContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    text-align: center;
+    padding: var(--space-md);
+}
+
+.confirmContent p {
+    font-size: 1.1rem;
+    color: var(--color-text-primary);
+}
+
+.confirmActions {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+}
+
+.cancelButton, .confirmButton {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.cancelButton {
+    background-color: var(--color-bg);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+}
+.cancelButton:hover {
+    background-color: var(--color-border);
+}
+
+.confirmButton {
+    background-color: var(--color-error);
+    color: var(--color-text-on-primary);
+}
+.confirmButton:hover {
+    background-color: #f74545;
+}

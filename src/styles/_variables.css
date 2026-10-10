@@ -1,0 +1,29 @@
+:root {
+  --font-primary: 'Poppins', sans-serif;
+
+  --color-primary: #4A90E2;       /* Un azul moderno */
+  --color-primary-light: #82B3F4;
+  --color-primary-dark: #357ABD;
+
+  --color-bg: #F4F7FC;             /* Fondo principal muy claro */
+  --color-surface: #FFFFFF;        /* Color de las tarjetas y modales */
+  --color-border: #E0E7FF;         /* Color de los bordes suaves */
+
+  --color-text-primary: #2D3748;   /* Texto principal oscuro */
+  --color-text-secondary: #718096; /* Texto secundario más claro */
+  --color-text-on-primary: #FFFFFF;/* Texto sobre fondos primarios (botones) */
+
+  --color-success: #48BB78;
+  --color-warning: #F6E05E;
+  --color-error: #F56565;
+
+  --space-xs: 0.25rem; /* 4px */
+  --space-sm: 0.5rem;  /* 8px */
+  --space-md: 1rem;    /* 16px */
+  --space-lg: 1.5rem;  /* 24px */
+  --space-xl: 2rem;    /* 32px */
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --border-radius: 8px;
+}

@@ -1,0 +1,296 @@
+/* src/features/pos/components/Cart.module.css */
+.cart {
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  position: relative; 
+}
+
+.header h3 {
+  margin: 0;
+  flex-grow: 1; 
+  text-align: left;
+}
+
+/* --- MODIFICADO: Estilos para el botón de vaciar carrito --- */
+.clearCartButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 2rem; /* Más grande */
+  color: var(--color-text-secondary);
+  transition: color 0.2s;
+  padding: var(--space-xs);
+  flex-shrink: 0; 
+  /* --- AÑADIDO: Posicionamiento absoluto para centrarlo y separarlo de la fecha --- */
+  position: absolute;
+  top: 50%;
+  right: calc(50% - 3rem); /* Centrado horizontalmente (50% del ancho del padre - mitad de su propio ancho) */
+  transform: translateY(-50%);
+}
+
+.clearCartButton:hover {
+  color: var(--color-error);
+}
+
+.clearCartButton:disabled {
+  color: var(--color-border);
+  cursor: not-allowed;
+}
+
+
+.dateTime {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  text-align: right;
+  flex-shrink: 0; 
+  margin-left: auto; 
+}
+
+.dateTime span {
+  display: block;
+}
+
+.itemList {
+  flex-grow: 1;
+  overflow-y: auto;
+  margin: 0 -1rem;
+  padding: 0 1rem;
+}
+
+.emptyMessage {
+  text-align: center;
+  color: var(--color-text-secondary);
+  padding: var(--space-xl) 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color 0.2s;
+  border-radius: var(--border-radius);
+  margin-bottom: var(--space-xs);
+}
+
+.item:hover {
+  background-color: var(--color-bg);
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.item img {
+  width: 40px;
+  height: 40px;
+  object-fit: fill;
+  border-radius: var(--border-radius);
+  flex-shrink: 0;
+}
+
+.itemInfo {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemName {
+  display: block;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemPrice {
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+.quantityControl {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background-color: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.quantityControl button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: bold;
+  width: 30px;
+  height: 30px;
+  color: var(--color-primary);
+}
+
+.quantityControl span {
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+}
+
+.deleteButton {
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: var(--space-xs);
+  margin-left: var(--space-sm);
+  transition: color 0.2s;
+  flex-shrink: 0;
+}
+
+.deleteButton:hover {
+  color: var(--color-error);
+}
+
+.summary {
+  margin-top: auto;
+  padding-top: var(--space-lg);
+  border-top: 1px dashed var(--color-border);
+}
+
+.summaryLine {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+  font-size: 1rem;
+}
+
+.summaryLine span:first-child {
+  color: var(--color-text-secondary);
+}
+
+.summaryLine span:last-child {
+  font-weight: 600;
+}
+
+.total {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.total span {
+  color: var(--color-text-primary) !important;
+}
+
+.placeOrderButton {
+  width: 100%;
+  padding: var(--space-md);
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.placeOrderButton:disabled {
+  background-color: var(--color-primary-light);
+  cursor: not-allowed;
+}
+
+.placeOrderButton:hover:not(:disabled) {
+  background-color: var(--color-primary-dark);
+}
+
+/* Estilos para el modal de confirmación de vaciar carrito */
+.confirmContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    text-align: center;
+    padding: var(--space-md);
+}
+
+.confirmContent p {
+    font-size: 1.1rem;
+    color: var(--color-text-primary);
+}
+
+.confirmActions {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-md);
+}
+
+.cancelButton, .confirmButton {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.cancelButton {
+    background-color: var(--color-bg);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+}
+.cancelButton:hover {
+    background-color: var(--color-border);
+}
+
+.confirmButton {
+    background-color: var(--color-error);
+    color: var(--color-text-on-primary);
+}
+.confirmButton:hover {
+    background-color: #f47373;
+}
+
+/* FILE: src/features/pos/components/Cart.module.css */
+/* DESC: Añade estas clases al final del archivo. */
+
+/* Asegúrate de que tu estilo de imagen original se llame así */
+.itemImage {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: var(--border-radius-sm);
+}
+
+/* Estilo para el contenedor del icono cuando no hay imagen */
+.itemImagePlaceholder {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background-soft);
+  border-radius: var(--border-radius-sm);
+  flex-shrink: 0; /* Evita que se encoja */
+}
+
+/* Estilo para el icono de Boxicons dentro del placeholder */
+.itemImagePlaceholder i {
+  font-size: 24px; /* Un tamaño adecuado para el carrito */
+  color: var(--color-text-secondary);
+}

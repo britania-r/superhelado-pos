@@ -1,0 +1,177 @@
+/* src/features/pos/components/PaymentModalForm.module.css */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.formGroup label {
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.input {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+}
+
+.infoField {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.totalAmount {
+  color: var(--color-primary);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.changeAmount {
+  color: var(--color-success);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.errorText {
+  color: var(--color-error);
+  font-size: 0.8rem;
+}
+
+/* Estilos para los botones de método de pago */
+.paymentMethodButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.paymentMethodLabel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  background-color: var(--color-bg);
+  transition: background-color 0.2s, border-color 0.2s;
+  flex-grow: 1; 
+  min-width: 100px; 
+}
+
+.paymentMethodLabel input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.paymentMethodName {
+  font-weight: 500;
+  color: var(--color-text-primary);
+  text-align: center;
+  width: 100%; 
+  height: 100%; 
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- MODIFICADO: Estilo cuando el radio button está seleccionado --- */
+.paymentMethodLabel input[type="radio"]:checked + .paymentMethodName {
+  background-color: var(--color-primary); 
+  color: var(--color-text-on-primary); 
+  border-color: var(--color-primary); 
+  border-radius: var(--border-radius);
+  /* Asegura que el fondo rellene toda la etiqueta */
+  padding: inherit;
+  margin: calc(-1 * var(--space-sm)) calc(-1 * var(--space-sm)); 
+  width: calc(100% + var(--space-sm) * 2); 
+  height: calc(100% + var(--space-sm) * 2);
+}
+
+.paymentMethodLabel:hover:not(:has(input[type="radio"]:checked)) {
+  background-color: var(--color-primary-light);
+  border-color: var(--color-primary);
+}
+.paymentMethodLabel input[type="radio"]:checked + .paymentMethodName:hover {
+    background-color: var(--color-primary-dark);
+}
+
+
+/* Estilos para las opciones de imprimir */
+.printOptions {
+  display: flex;
+  gap: var(--space-lg); 
+  width: 100%; 
+}
+
+.printOptionLabel { 
+  font-size: 1.1rem; 
+  padding: 0.6rem 1rem; 
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  background-color: var(--color-bg);
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+  display: flex; 
+  align-items: center;
+  gap: var(--space-sm); 
+  flex-grow: 1; 
+  justify-content: center; 
+}
+
+.printOptionLabel input[type="radio"] {
+    margin-right: 0; 
+    width: auto; 
+    height: auto; 
+    opacity: 1; 
+    position: static; 
+}
+
+.printOptionLabel input[type="radio"]:checked + span {
+    color: var(--color-primary); 
+    font-weight: 600;
+}
+
+.printOptionLabel:hover {
+    background-color: var(--color-primary-light);
+    border-color: var(--color-primary);
+}
+.printOptionLabel input[type="radio"]:checked + span:hover {
+    background-color: var(--color-primary-dark);
+    color: var(--color-text-on-primary);
+}
+
+.submitButton {
+  align-self: flex-end;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: background-color 0.2s;
+}
+
+.submitButton:disabled {
+  background-color: var(--color-primary-light);
+  cursor: not-allowed;
+}

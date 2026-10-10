@@ -1,0 +1,120 @@
+/* src/features/shifts/ShiftManagementPage.module.css */
+.container {
+  padding: var(--space-lg);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-xl);
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--space-xs) var(--space-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.paginationButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-xs);
+  color: var(--color-primary);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paginationButton:disabled {
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  display: table;
+  table-layout: fixed;
+}
+
+.table thead, .table tbody {
+  display: block;
+}
+
+.table tbody tr {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px solid var(--color-border);
+}
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+.table thead tr {
+  display: flex;
+  width: 100%;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.table th, .table td {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  flex: 1; 
+  border-bottom: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ajustes de ancho de columna para Cash Shifts */
+.table th:nth-child(1), .table td:nth-child(1) { flex: 0.8 1 0%; } /* ID Turno */
+.table th:nth-child(2), .table td:nth-child(2) { flex: 1.2 1 0%; } /* Tienda */
+.table th:nth-child(3), .table td:nth-child(3) { flex: 1.5 1 0%; } /* Vendedor */
+.table th:nth-child(4), .table td:nth-child(4) { flex: 2 1 0%; }   /* Apertura */
+.table th:nth-child(5), .table td:nth-child(5) { flex: 2 1 0%; }   /* Cierre */
+.table th:nth-child(6), .table td:nth-child(6) { flex: 1.2 1 0%; } /* Monto Apertura */
+.table th:nth-child(7), .table td:nth-child(7) { flex: 1.2 1 0%; } /* Ventas Calculadas */
+.table th:nth-child(8), .table td:nth-child(8) { flex: 1.2 1 0%; } /* Monto Cierre */
+.table th:nth-child(9), .table td:nth-child(9) { flex: 1.2 1 0%; } /* Diferencia */
+
+
+/* Estados de la página */
+.loadingState, .errorState, .emptyState {
+  text-align: center;
+  padding: var(--space-xl);
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-lg);
+}
+
+.errorState {
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+.emptyState p {
+  margin-bottom: var(--space-md);
+}

@@ -1,0 +1,228 @@
+/* src/features/sales/SaleManagementPage.module.css */
+.container {
+  padding: var(--space-lg);
+}
+
+.header {
+  display: flex;
+  flex-direction: column; /* Cambiado a columna para el título y los controles */
+  align-items: flex-start; /* Alinea los ítems a la izquierda */
+  margin-bottom: var(--space-md); /* Menos margen inferior para la cabecera */
+}
+
+.header h1 {
+  margin-bottom: var(--space-md); /* Espacio entre título y controles */
+}
+
+/* --- AÑADIDO: Contenedor para filtros y botón de aplicar --- */
+.controls {
+  display: flex;
+  flex-wrap: wrap; /* Permite que los controles pasen a la siguiente línea en pantallas pequeñas */
+  gap: var(--space-md);
+  align-items: center;
+  margin-bottom: var(--space-md); /* Espacio entre los controles y la paginación/tabla */
+}
+
+.dateInput, .selectInput {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.fetchButton {
+  padding: 0.6rem 1.2rem;
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.fetchButton:disabled {
+  background-color: var(--color-primary-light);
+  cursor: not-allowed;
+}
+
+/* --- MODIFICADO: Estilos para la paginación --- */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  padding: var(--space-xs) var(--space-md);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  /* Asegura que la paginación se alinee a la derecha debajo de los controles */
+  align-self: flex-end; 
+  margin-left: auto; /* Empuja a la derecha */
+  margin-bottom: var(--space-md); /* Espacio debajo de la paginación */
+}
+
+.paginationButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-xs);
+  color: var(--color-primary);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paginationButton:disabled {
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  display: table;
+  table-layout: fixed;
+}
+
+.table thead, .table tbody {
+  display: block;
+}
+
+.table tbody tr {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px solid var(--color-border);
+}
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+.table thead tr {
+  display: flex;
+  width: 100%;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.table th, .table td {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  flex: 1; 
+  border-bottom: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ajustes de ancho de columna para Sales */
+.table th:nth-child(1), .table td:nth-child(1) { flex: 1.5 1 0%; } /* ID Venta */
+.table th:nth-child(2), .table td:nth-child(2) { flex: 2 1 0%; }   /* Fecha y Hora */
+.table th:nth-child(3), .table td:nth-child(3) { flex: 1.5 1 0%; } /* Tienda */
+.table th:nth-child(4), .table td:nth-child(4) { flex: 2 1 0%; }   /* Vendedor */
+.table th:nth-child(5), .table td:nth-child(5) { flex: 1.5 1 0%; } /* Método de Pago */
+.table th:nth-child(6), .table td:nth-child(6) { flex: 1 1 0%; }   /* Total */
+.table th:nth-child(7), .table td:nth-child(7) { flex: 1 1 0%; justify-content: center; } /* Acciones */
+
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.actionButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--space-xs);
+  font-size: 1rem; 
+  color: var(--color-primary);
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionButton i {
+    margin-right: var(--space-xs);
+    font-size: 1.4rem;
+}
+
+.actionButton:hover {
+    color: var(--color-primary-dark);
+}
+
+/* Estados de la página */
+.loadingState, .errorState, .emptyState {
+  text-align: center;
+  padding: var(--space-xl);
+  background-color: var(--color-surface);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-lg);
+}
+
+.errorState {
+  color: var(--color-error);
+  font-weight: 600;
+}
+
+.emptyState p {
+  margin-bottom: var(--space-md);
+}
+
+.controls{display:flex;flex-wrap:wrap;gap:.5rem;}
+
+.fetchButton{ /* tu estilo existente */ }
+.summaryButton{margin-left:auto;padding:.4rem .9rem;font-size:.9rem;background:#4f83ff;color:#fff;border:none;border-radius:4px;cursor:pointer;}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  align-items: center;
+}
+
+/* espacio que empuja el siguiente botón al extremo derecho */
+.controlsSpacer {
+  flex: 1 1 auto;
+}
+
+.summaryButton {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: var(--color-primary);
+  color: #fff;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.05s;
+}
+.summaryButton:active  { transform: scale(0.97); }
+.summaryButton:disabled{ opacity: 0.6; cursor: not-allowed; }
+
+.exportButton {
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: var(--color-primary);
+  color: #fff;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.05s;
+}

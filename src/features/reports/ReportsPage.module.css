@@ -1,0 +1,72 @@
+/* src/features/reports/ReportsPage.module.css */
+.container {
+  padding: var(--space-lg);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: var(--space-xl);
+}
+
+.header h1 {
+  margin-bottom: var(--space-md);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.selectInput, .dateInput {
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: 0.9rem;
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.fetchButton {
+  padding: 0.6rem 1.2rem;
+  background-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+.fetchButton:disabled {
+  background-color: var(--color-primary-light);
+  cursor: not-allowed;
+}
+
+.reportContent {
+  background-color: var(--color-surface);
+  padding: var(--space-lg);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  min-height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Estilos de estado */
+.loadingState, .errorState, .emptyState {
+  text-align: center;
+  padding: var(--space-xl);
+  color: var(--color-text-secondary);
+}
+
+.errorState {
+  color: var(--color-error);
+  font-weight: 600;
+}

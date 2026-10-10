@@ -1,0 +1,89 @@
+/* src/components/ui/Checkbox.module.css */
+
+.wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* El input real queda invisible pero enfocable */
+.input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.box {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border: 1.5px solid var(--border-hover);
+  border-radius: 6px;
+  background-color: var(--bg-surface);
+  color: #FFFFFF;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.box i {
+  font-size: 16px;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur) var(--ease-out);
+}
+
+.wrapper:hover .input:not(:disabled):not(:checked) + .box {
+  border-color: var(--brand-blue);
+}
+
+.input:checked + .box {
+  border-color: var(--brand-blue);
+  background-color: var(--brand-blue);
+}
+
+.input:checked + .box i {
+  opacity: 1;
+  transform: none;
+}
+
+.input:focus-visible + .box {
+  box-shadow: var(--focus-ring);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.label {
+  font-weight: 600;
+  color: var(--text-1);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.description {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}

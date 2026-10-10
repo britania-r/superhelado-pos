@@ -1,186 +1,249 @@
 /* src/features/management/products/components/ProductForm.module.css */
 
 .form {
+  position: relative;
   display: flex;
   flex-direction: column;
-}
-
-.formGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: var(--space-lg);
-  margin-bottom: var(--space-lg);
 }
 
-.formGroup {
+/* Mientras llegan los datos del producto a editar */
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
   display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.fullWidth {
-  grid-column: 1 / -1;
-}
-
-.formGroup label {
-  font-weight: 500;
-}
-
-.formGroup input,
-.formGroup select,
-.formGroup textarea {
-  width: 100%;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  font-size: 0.9rem;
-}
-
-.errorText {
-  color: var(--color-error);
-  font-size: 0.8rem;
-}
-
-/* Texto de ayuda bajo "Disponible en Tiendas y Precios" */
-.helpText {
-  margin: 0;
-  font-size: 0.8rem;
-  color: var(--color-text-secondary);
-}
-
-.fileUploadBox {
-  display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--space-sm);
-  padding: var(--space-lg);
-  border: 2px dashed var(--color-border);
-  border-radius: var(--border-radius);
-  background-color: var(--color-background-soft);
-  cursor: pointer;
-  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
-  text-align: center;
+  border-radius: var(--radius-md);
+  background-color: rgba(255, 255, 255, 0.78);
+  color: var(--text-2);
+  font-weight: 600;
 }
 
-.fileUploadBox:hover {
-  background-color: var(--color-surface);
-  border-color: var(--color-primary);
-}
-
-.fileUploadBox i {
-  font-size: 2rem;
-  color: var(--color-primary);
-}
-
-.fileUploadBox span {
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
-  word-break: break-all; /* Para nombres de archivo largos */
-}
-
-.fileUploadBox input[type="file"] {
-  display: none;
-}
-
-.imagePreview {
-  margin-top: var(--space-sm);
-}
-
-.imagePreview p {
-  font-size: 0.8rem;
-  color: var(--color-text-secondary);
-  margin-bottom: var(--space-xs);
-}
-
-.imagePreview img {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--color-border);
-}
-
-
-.storeSelectionGrid {
+/* ── Datos + imagen ── */
+.grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--space-md);
-  background-color: var(--color-bg);
-  padding: var(--space-md);
-  border-radius: var(--border-radius);
+  grid-template-columns: minmax(0, 1fr) 220px;
+  align-items: start;
+  gap: var(--space-md) var(--space-lg);
 }
 
-.storeItem {
+.mainFields {
   display: flex;
   flex-direction: column;
+  gap: var(--space-md);
+  min-width: 0;
+}
+
+/* ── Imagen: caja para hacer clic o soltar el archivo ── */
+.dropzone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  aspect-ratio: 1;
+  padding: var(--space-md);
+  overflow: hidden;
+  border: 1.5px dashed var(--border-2);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-subtle);
+  text-align: center;
+  transition:
+    border-color var(--dur) var(--ease-out),
+    background-color var(--dur) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out);
+}
+
+.dropzone:hover,
+.dragging {
+  border-color: var(--brand-blue);
+  background-color: var(--brand-blue-50);
+}
+
+.dropzone:focus-within {
+  border-color: var(--brand-blue);
+  box-shadow: var(--focus-ring);
+}
+
+.dropIcon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: var(--bg-surface);
+  color: var(--brand-blue);
+  font-size: 26px;
+  box-shadow: var(--shadow-xs);
+}
+
+.dropText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.dropTitle {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-1);
+  overflow-wrap: anywhere;
+}
+
+.dropHint {
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+}
+
+/* Con imagen: la foto llena la caja y el texto va encima */
+.hasImage {
+  padding: 0;
+  border-style: solid;
+  border-color: var(--border-1);
+}
+
+.preview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hasImage .dropText {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  left: 8px;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  background-color: rgba(35, 42, 92, 0.72);
+}
+
+.hasImage .dropTitle {
+  color: #FFFFFF;
+}
+
+.fileInput {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* ── Tiendas y precios ── */
+.stores {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.storesLegend {
+  margin-bottom: 2px;
+  padding: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.storesHelp {
+  margin-bottom: var(--space-sm);
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+}
+
+.storeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: var(--space-sm);
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  padding: var(--space-sm); /* Padding reducido para mejor alineación */
-  background-color: var(--color-surface);
-  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
 }
 
-.storeItemChecked {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 1px var(--color-primary);
+.storeCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
+  transition: border-color var(--dur) var(--ease-out), background-color var(--dur) var(--ease-out);
 }
 
-/* Tienda asignada pero oculta en el POS (va después de .storeItemChecked para ganarle) */
-.storeItemInactive {
-  border-style: dashed;
-  border-color: var(--color-text-secondary);
-  box-shadow: none;
-  background-color: var(--color-bg);
+.storeChecked {
+  border-color: rgba(59, 76, 160, 0.4);
+  background-color: var(--brand-blue-50);
 }
 
-.storeItemHeader {
+/* Asignada pero oculta en el POS */
+.storeHidden {
+  border-color: var(--border-2);
+  background-color: var(--bg-subtle);
+}
+
+.storeCheck {
+  width: 100%;
+}
+
+.storeBody {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding-left: 30px; /* alineado con el nombre, después de la casilla */
+}
+
+.priceField {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* El switch se centra con el campo de 40px */
+.storeBody > :last-child {
+  margin-top: 8px;
+}
+
+.priceError {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  cursor: pointer; /* Hace que todo el label sea clickeable */
-  padding: 0.5rem; /* Padding para hacer el área clickeable más grande */
-}
-
-
-.storeItemHeader span {
+  gap: 4px;
+  font-size: var(--fs-xs);
   font-weight: 500;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  color: var(--danger-ink);
 }
 
-.priceInput {
-  padding: 0.6rem !important; /* Mismo padding que otros inputs */
-  font-size: 1rem !important;
-  font-weight: 600;
-  text-align: center;
-  border-color: var(--color-primary-light);
-  width: 100%; /* Ocupa todo el ancho de su contenedor */
-  box-sizing: border-box; /* Importante para el cálculo del ancho */
+.storesError {
+  margin-top: var(--space-xs);
+  font-size: var(--fs-sm);
+  color: var(--danger-ink);
 }
 
-/* Contenedor del switch "Visible en POS" */
-.storeItemFooter {
-  display: flex;
-  justify-content: center;
-  padding-bottom: var(--space-xs);
-}
+/* ── Celular: una columna ── */
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 
+  .dropzone {
+    aspect-ratio: 16 / 9;
+  }
 
-.submitButton {
-  align-self: flex-end;
-  margin-top: var(--space-md);
-  padding: 0.75rem 1.5rem;
-  background-color: var(--color-primary);
-  color: var(--color-text-on-primary);
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  font-weight: 600;
-}
+  .storeGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 
-.submitButton:disabled {
-  background-color: var(--color-primary-light);
-  cursor: not-allowed;
+  .storeBody {
+    padding-left: 0;
+  }
 }

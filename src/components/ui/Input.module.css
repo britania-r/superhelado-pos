@@ -74,7 +74,39 @@
   color: var(--brand-blue);
 }
 
-/* Botón para mostrar u ocultar la contraseña */
+/* Texto fijo a la izquierda ("S/") */
+.prefix {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--text-2);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.withPrefix .input {
+  padding-left: 2.1rem;
+}
+
+/* Sin flechas nativas en los campos de número (precios) */
+.input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.input[type='number']::-webkit-inner-spin-button,
+.input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Las búsquedas usan la "x" propia (onClear), no la del navegador */
+.input::-webkit-search-cancel-button,
+.input::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Botón a la derecha: mostrar contraseña o borrar texto */
 .withToggle .input {
   padding-right: 2.75rem;
 }

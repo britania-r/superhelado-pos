@@ -1,13 +1,23 @@
 // src/features/management/products/components/ProductForm.tsx
 
-import { useForm, type SubmitHandler, useFieldArray } from 'react-hook-form';
-import { useEffect, useState } from 'react';
+import { Controller, useForm, type SubmitHandler, useFieldArray } from 'react-hook-form';
+import { useEffect, useMemo, useState } from 'react';
+import toast from 'react-hot-toast';
 import { getProductDetails } from '../../../../api/products.api';
 import { useCategories, useStores, useUpsertProduct } from '../../../../hooks/queries';
-import { Switch } from '../../../../components/ui/Switch';
 import type { ProductWithDetails } from '../../../../types';
+import { getErrorMessage } from '../../../../lib/errors';
+import { cx } from '../../../../lib/cx';
+import { Field } from '../../../../components/ui/Field';
+import { Input } from '../../../../components/ui/Input';
+import { Textarea } from '../../../../components/ui/Textarea';
+import { Checkbox } from '../../../../components/ui/Checkbox';
+import { Switch } from '../../../../components/ui/Switch';
+import { Spinner } from '../../../../components/ui/Spinner';
+import { Button } from '../../../../components/ui/Button';
+import { FormActions } from '../../../../components/ui/FormActions';
+import { SearchableSelect, type SelectOption } from '../../../../components/ui/SearchableSelect';
 import styles from './ProductForm.module.css';
-import toast from 'react-hot-toast';
 
 interface StorePriceField {
   store_id: string;
@@ -27,9 +37,11 @@ interface ProductFormData {
 interface ProductFormProps {
   productToEdit: ProductWithDetails | null;
   onFormSubmit: () => void;
+  /** Muestra el botón Cancelar */
+  onCancel?: () => void;
 }
 
-export const ProductForm = ({ productToEdit, onFormSubmit }: ProductFormProps) => {
+export const ProductForm = ({ productToEdit, onFormSubmit, onCancel }: ProductFormProps) => {
   const { register, handleSubmit, reset, control, watch, setValue, formState: { errors, isSubmitting } } = useForm<ProductFormData>();
   const { fields, append, remove } = useFieldArray({ control, name: 'storePrices' });
   const upsertProduct = useUpsertProduct();
@@ -37,6 +49,8 @@ export const ProductForm = ({ productToEdit, onFormSubmit }: ProductFormProps) =
   const { data: categories = [] } = useCategories();
   const { data: allStores = [] } = useStores();
   const [selectedFileName, setSelectedFileName] = useState<string | null>(null);
+  const [loadingDetails, setLoadingDetails] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const watchStorePrices = watch('storePrices') ?? [];
   const watchImageFile = watch('imageFile');
@@ -49,20 +63,36 @@ export const ProductForm = ({ productToEdit, onFormSubmit }: ProductFormProps) =
     }
   }, [watchImageFile]);
 
+  /* Vista previa de la imagen elegida, antes de guardar */
+  const selectedFile = watchImageFile && watchImageFile.length > 0 ? watchImageFile[0] : null;
+  const previewUrl = useMemo(() => (selectedFile ? URL.createObjectURL(selectedFile) : null), [selectedFile]);
+  useEffect(() => () => {
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+  }, [previewUrl]);
+  const imageSrc = previewUrl ?? productToEdit?.image_url ?? null;
+  /* Si la imagen actual no carga, se muestra la caja vacía en vez del ícono roto */
+  const [failedImage, setFailedImage] = useState<string | null>(null);
+  const visibleImage = imageSrc && failedImage !== imageSrc ? imageSrc : null;
+
   useEffect(() => {
     const loadAndPopulateForm = async (product: ProductWithDetails) => {
-      const detailed = await getProductDetails(product.id);
-      if (detailed) {
-        reset({
-          name: detailed.name,
-          description: detailed.description || '',
-          category_id: detailed.category_id,
-          storePrices: detailed.store_products.map((link) => ({
-            store_id: link.store_id,
-            price: link.price,
-            is_active: link.is_active ?? true,
-          })),
-        });
+      setLoadingDetails(true);
+      try {
+        const detailed = await getProductDetails(product.id);
+        if (detailed) {
+          reset({
+            name: detailed.name,
+            description: detailed.description || '',
+            category_id: detailed.category_id,
+            storePrices: detailed.store_products.map((link) => ({
+              store_id: link.store_id,
+              price: link.price,
+              is_active: link.is_active ?? true,
+            })),
+          });
+        }
+      } finally {
+        setLoadingDetails(false);
       }
     };
 
@@ -73,6 +103,11 @@ export const ProductForm = ({ productToEdit, onFormSubmit }: ProductFormProps) =
     }
     setSelectedFileName(null);
   }, [productToEdit, reset]);
+
+  const categoryOptions = useMemo<SelectOption[]>(
+    () => categories.map((category) => ({ value: String(category.id), label: category.name, icon: 'bx-category' })),
+    [categories]
+  );
 
   const handleStoreCheckboxChange = (storeId: string, isChecked: boolean) => {
     const idx = fields.findIndex((f) => f.store_id === storeId);
@@ -110,111 +145,185 @@ export const ProductForm = ({ productToEdit, onFormSubmit }: ProductFormProps) =
       toast.success(productToEdit ? 'Producto actualizado con éxito!' : 'Producto creado con éxito!');
       onFormSubmit();
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Error desconocido';
-      toast.error(`Error guardando el producto: ${message}`);
+      toast.error(`Error guardando el producto: ${getErrorMessage(err)}`);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-      <div className={styles.formGrid}>
-        <div className={styles.formGroup}>
-          <label>Nombre del Producto</label>
-          <input {...register('name', { required: 'Nombre es obligatorio' })} />
-          {errors.name && <p className={styles.errorText}>{errors.name.message}</p>}
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className={styles.form}
+      noValidate
+      aria-busy={loadingDetails || undefined}
+    >
+      {loadingDetails && (
+        <div className={styles.loadingOverlay}>
+          <Spinner label="" />
+          Cargando producto…
         </div>
-        <div className={styles.formGroup}>
-          <label>Categoría</label>
-          <select {...register('category_id', { required: 'Categoría es obligatoria', valueAsNumber: true })}>
-            <option value="">Selecciona una categoría</option>
-            {categories.map((cat) => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
-          </select>
-          {errors.category_id && <p className={styles.errorText}>{errors.category_id.message}</p>}
-        </div>
-        <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-          <label>Descripción</label>
-          <textarea {...register('description')} rows={3}></textarea>
+      )}
+
+      <div className={styles.grid}>
+        <div className={styles.mainFields}>
+          <Field label="Nombre" htmlFor="product-name" error={errors.name?.message} required>
+            <Input
+              id="product-name"
+              placeholder="Helado de fresa"
+              autoComplete="off"
+              {...register('name', { required: 'El nombre es obligatorio' })}
+            />
+          </Field>
+
+          <Field label="Categoría" htmlFor="product-category" error={errors.category_id?.message} required>
+            <Controller
+              name="category_id"
+              control={control}
+              rules={{
+                validate: (value) => (typeof value === 'number' && value > 0) || 'La categoría es obligatoria',
+              }}
+              render={({ field }) => (
+                <SearchableSelect
+                  ref={field.ref}
+                  value={field.value ? String(field.value) : ''}
+                  options={categoryOptions}
+                  label="Categoría"
+                  placeholder="Selecciona una categoría"
+                  searchPlaceholder="Buscar categoría…"
+                  emptyMessage="No hay categorías con ese nombre"
+                  onBlur={field.onBlur}
+                  onChange={(value) => field.onChange(Number(value))}
+                />
+              )}
+            />
+          </Field>
+
+          <Field label="Descripción" htmlFor="product-description" hint="Opcional.">
+            <Textarea
+              id="product-description"
+              rows={3}
+              placeholder="Dos bolas con topping a elección"
+              {...register('description')}
+            />
+          </Field>
         </div>
 
-        <div className={styles.formGroup}>
-          <label>Imagen</label>
-          <label htmlFor="imageFile" className={styles.fileUploadBox}>
-            <i className='bx bx-upload'></i>
-            <span>{selectedFileName || 'Seleccionar o arrastrar archivo'}</span>
-            <input id="imageFile" type="file" accept="image/png, image/jpeg" {...register('imageFile')} />
-          </label>
-          {productToEdit?.image_url && (
-            <div className={styles.imagePreview}>
-              <p>Imagen actual:</p>
-              <img src={productToEdit.image_url} alt="Vista previa" />
-            </div>
-          )}
-        </div>
+        <Field label="Imagen" htmlFor="product-image" hint="PNG o JPG." className={styles.imageField}>
+          <div
+            className={cx(styles.dropzone, visibleImage && styles.hasImage, isDragging && styles.dragging)}
+            onDragEnter={() => setIsDragging(true)}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={() => setIsDragging(false)}
+          >
+            {visibleImage ? (
+              <img src={visibleImage} alt="" className={styles.preview} onError={() => setFailedImage(visibleImage)} />
+            ) : (
+              <span className={styles.dropIcon} aria-hidden="true">
+                <i className="bx bx-image-add" />
+              </span>
+            )}
+            <span className={styles.dropText}>
+              <span className={styles.dropTitle}>
+                {selectedFileName ?? (imageSrc ? 'Cambiar imagen' : 'Elige o arrastra una imagen')}
+              </span>
+              {!visibleImage && (
+                <span className={styles.dropHint}>
+                  {imageSrc ? 'No se pudo cargar la imagen actual' : 'Haz clic o suelta el archivo aquí'}
+                </span>
+              )}
+            </span>
+            {/* El input cubre toda la caja: sirve para hacer clic y para soltar el archivo */}
+            <input
+              id="product-image"
+              type="file"
+              accept="image/png, image/jpeg"
+              className={styles.fileInput}
+              {...register('imageFile')}
+            />
+          </div>
+        </Field>
+      </div>
 
-        <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-          <label>Disponible en Tiendas y Precios</label>
-          <p className={styles.helpText}>
-            Desmarcar una tienda borra su precio. Si solo quieres que no aparezca en el
-            Punto de Venta, apaga “Visible en POS”.
-          </p>
-          <div className={styles.storeSelectionGrid}>
-            {allStores.map((store) => {
-              const fieldIndex = fields.findIndex((f) => f.store_id === store.id);
-              const isChecked = fieldIndex !== -1;
-              const isActive = isChecked ? (watchStorePrices[fieldIndex]?.is_active ?? true) : true;
+      <fieldset className={styles.stores}>
+        <legend className={styles.storesLegend}>Tiendas y precios</legend>
+        <p className={styles.storesHelp}>
+          Desmarcar una tienda borra su precio. Si solo quieres que no aparezca en el
+          Punto de Venta, apaga “Visible en POS”.
+        </p>
 
-              const itemClass = [
-                styles.storeItem,
-                isChecked ? styles.storeItemChecked : '',
-                isChecked && !isActive ? styles.storeItemInactive : '',
-              ]
-                .filter(Boolean)
-                .join(' ');
+        <div className={styles.storeGrid}>
+          {allStores.map((store) => {
+            const fieldIndex = fields.findIndex((f) => f.store_id === store.id);
+            const isChecked = fieldIndex !== -1;
+            const isActive = isChecked ? (watchStorePrices[fieldIndex]?.is_active ?? true) : true;
+            const priceError = isChecked ? errors.storePrices?.[fieldIndex]?.price : undefined;
 
-              return (
-                <div key={store.id} className={itemClass}>
-                  <label className={styles.storeItemHeader} htmlFor={`store-check-${store.id}`}>
-                    <input
-                      type="checkbox"
-                      id={`store-check-${store.id}`}
-                      checked={isChecked}
-                      onChange={(e) => handleStoreCheckboxChange(store.id, e.target.checked)}
-                    />
-                    <span>{store.name}</span>
-                  </label>
-                  {isChecked && (
-                    <>
-                      <input
+            return (
+              <div
+                key={store.id}
+                className={cx(
+                  styles.storeCard,
+                  isChecked && styles.storeChecked,
+                  isChecked && !isActive && styles.storeHidden
+                )}
+              >
+                <Checkbox
+                  id={`store-check-${store.id}`}
+                  checked={isChecked}
+                  onChange={(e) => handleStoreCheckboxChange(store.id, e.target.checked)}
+                  label={store.name}
+                  description={store.address ?? undefined}
+                  className={styles.storeCheck}
+                />
+
+                {isChecked && (
+                  <div className={styles.storeBody}>
+                    <div className={styles.priceField}>
+                      <Input
                         type="number"
                         step="0.01"
-                        placeholder="Precio"
+                        inputMode="decimal"
+                        prefixText="S/"
+                        placeholder="0.00"
+                        aria-label={`Precio en ${store.name}`}
+                        invalid={!!priceError}
                         {...register(`storePrices.${fieldIndex}.price`, {
                           required: 'Precio es obligatorio',
                           valueAsNumber: true,
                           min: 0,
                         })}
-                        className={styles.priceInput}
                       />
-                      <div className={styles.storeItemFooter}>
-                        <Switch
-                          size="sm"
-                          checked={isActive}
-                          onChange={(value) => handleActiveChange(fieldIndex, value)}
-                          label={isActive ? 'Visible en POS' : 'Oculto en POS'}
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-          {errors.storePrices && <p className={styles.errorText}>{errors.storePrices.message}</p>}
+                      {priceError && (
+                        <p className={styles.priceError} role="alert">
+                          <i className="bx bx-error-circle" aria-hidden="true" />
+                          {priceError.message || 'Precio inválido'}
+                        </p>
+                      )}
+                    </div>
+                    <Switch
+                      size="sm"
+                      checked={isActive}
+                      onChange={(value) => handleActiveChange(fieldIndex, value)}
+                      label={isActive ? 'Visible en POS' : 'Oculto en POS'}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
-      </div>
-      <button type="submit" disabled={isSubmitting} className={styles.submitButton}>
-        {isSubmitting ? 'Guardando...' : 'Guardar Producto'}
-      </button>
+        {errors.storePrices?.message && <p className={styles.storesError}>{errors.storePrices.message}</p>}
+      </fieldset>
+
+      <FormActions>
+        {onCancel && (
+          <Button variant="secondary" onClick={onCancel} disabled={isSubmitting}>
+            Cancelar
+          </Button>
+        )}
+        <Button type="submit" loading={isSubmitting} disabled={loadingDetails}>
+          {productToEdit ? 'Guardar cambios' : 'Crear producto'}
+        </Button>
+      </FormActions>
     </form>
   );
 };

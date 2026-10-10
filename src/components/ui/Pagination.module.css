@@ -1,0 +1,40 @@
+/* src/components/ui/Pagination.module.css */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.range {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-left: auto;
+}
+
+.status {
+  min-width: 112px;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.status strong {
+  color: var(--text-1);
+}
+
+@media (max-width: 640px) {
+  .pagination {
+    margin-top: var(--space-sm);
+    padding: 0 var(--space-xs);
+  }
+}

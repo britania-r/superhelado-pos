@@ -1,18 +1,40 @@
 // src/features/management/products/ProductManagementPage.tsx
 
-import { useState, useMemo } from 'react';
-import { useProducts, useStores, useDeleteProduct } from '../../../hooks/queries';
-import type { ProductWithDetails } from '../../../types';
-import { Modal } from '../../../components/ui/Modal';
-import { ProductForm } from './components/ProductForm';
-import { formatCurrency } from '../../../lib/formatters';
-import styles from './ProductManagementPage.module.css';
+import { useState, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useProducts, useStores, useDeleteProduct } from '../../../hooks/queries';
+import type { ProductWithDetails } from '../../../types';
+import { formatCurrency } from '../../../lib/formatters';
+import { getErrorMessage } from '../../../lib/errors';
+import { Modal } from '../../../components/ui/Modal';
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
+import { PageHeader } from '../../../components/ui/PageHeader';
+import { DataTable, type DataTableColumn } from '../../../components/ui/DataTable';
+import { EmptyState } from '../../../components/ui/EmptyState';
+import { Button } from '../../../components/ui/Button';
+import { IconButton } from '../../../components/ui/IconButton';
+import { Input } from '../../../components/ui/Input';
+import { SearchableSelect, type SelectOption } from '../../../components/ui/SearchableSelect';
+import { SegmentedControl, type SegmentedOption } from '../../../components/ui/SegmentedControl';
+import { Pagination } from '../../../components/ui/Pagination';
+import { Badge } from '../../../components/ui/Badge';
+import { Thumbnail } from '../../../components/ui/Thumbnail';
+import { ProductForm } from './components/ProductForm';
+import styles from './ProductManagementPage.module.css';
 
 const PRODUCTS_PER_PAGE = 30;
 
 type StatusFilter = 'all' | 'visible' | 'hidden';
+
+/* Valor de "Todas las tiendas" en el selector (los ids de tienda son UUID) */
+const ALL_STORES = 'all';
+
+const STATUS_OPTIONS: SegmentedOption<StatusFilter>[] = [
+  { value: 'all', label: 'Todos' },
+  { value: 'visible', label: 'Visibles', icon: 'bx-show' },
+  { value: 'hidden', label: 'Ocultos', icon: 'bx-hide' },
+];
 
 /* ¿Se ve en el POS? En la tienda filtrada, o en al menos una tienda */
 const isVisibleInPos = (product: ProductWithDetails, storeId: string | null) =>
@@ -26,17 +48,26 @@ const isHiddenInPos = (product: ProductWithDetails, storeId: string | null) =>
     ? product.store_products.length === 0 || product.store_products.some((sp) => !sp.is_active)
     : product.store_products.some((sp) => sp.store_id === storeId && !sp.is_active);
 
+/* "S/ 4.50" o "S/ 4.50 – S/ 6.00" si cambia entre tiendas */
+const formatPriceRange = (prices: number[]) => {
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+  return min === max ? formatCurrency(min) : `${formatCurrency(min)} – ${formatCurrency(max)}`;
+};
+
 export const ProductManagementPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<ProductWithDetails | null>(null);
+  const [productToDelete, setProductToDelete] = useState<ProductWithDetails | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStoreFilter, setSelectedStoreFilter] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const listTopRef = useRef<HTMLDivElement>(null);
 
   const navigate = useNavigate();
 
-  const { data: allProducts = [], isLoading, error } = useProducts();
+  const { data: allProducts = [], isLoading, error, refetch } = useProducts();
   const { data: stores = [] } = useStores();
   const deleteProduct = useDeleteProduct();
 
@@ -68,7 +99,20 @@ export const ProductManagementPage = () => {
   }, [filteredAndSearchedProducts, page]);
 
   const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= totalPages) setCurrentPage(newPage);
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      // La paginación está abajo: vuelve al inicio de la lista
+      listTopRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }
+  };
+
+  const hasFilters = searchTerm !== '' || selectedStoreFilter !== null || statusFilter !== 'all';
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setSelectedStoreFilter(null);
+    setStatusFilter('all');
+    setCurrentPage(1);
   };
 
   const handleOpenCreateModal = () => {
@@ -89,166 +133,274 @@ export const ProductManagementPage = () => {
     handleCloseModal();
   };
 
-  const handleDelete = async (productId: string) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este producto?")) {
-      try {
-        await deleteProduct.mutateAsync(productId);
-        toast.success("Producto eliminado con éxito.");
-      } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error desconocido';
-        toast.error(message, { duration: 7000 });
-      }
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+    try {
+      await deleteProduct.mutateAsync(productToDelete.id);
+      toast.success('Producto eliminado con éxito.');
+    } catch (err) {
+      toast.error(getErrorMessage(err));
+    } finally {
+      setProductToDelete(null);
     }
   };
 
-  /* Columna "Precios": con una tienda filtrada muestra su precio y estado;
-     con "Todas las Tiendas" muestra cuántas tiendas tiene y cuántas están ocultas */
-  const renderPriceCell = (product: ProductWithDetails) => {
-    if (selectedStoreFilter) {
-      const link = product.store_products.find((sp) => sp.store_id === selectedStoreFilter);
-      if (!link) return null;
+  const storeOptions = useMemo<SelectOption[]>(
+    () => [
+      { value: ALL_STORES, label: 'Todas las tiendas', icon: 'bx-buildings' },
+      ...stores.map((store) => ({ value: store.id, label: store.name, icon: 'bx-store-alt' })),
+    ],
+    [stores]
+  );
+
+  const columns = useMemo<DataTableColumn<ProductWithDetails>[]>(() => {
+    /* Precio: con una tienda filtrada, su precio y estado;
+       con "Todas las tiendas", el rango de precios y cuántas están ocultas */
+    const renderPriceCell = (product: ProductWithDetails) => {
+      if (selectedStoreFilter) {
+        const link = product.store_products.find((sp) => sp.store_id === selectedStoreFilter);
+        if (!link) return null;
+        return (
+          <span className={styles.priceCell}>
+            <span className={styles.price}>{formatCurrency(link.price)}</span>
+            {link.is_active ? (
+              <Badge tone="success" icon="bx-show">Visible</Badge>
+            ) : (
+              <Badge tone="neutral" icon="bx-hide">Oculto</Badge>
+            )}
+          </span>
+        );
+      }
+
+      const total = product.store_products.length;
+      if (total === 0) return <span className={styles.noPrice}>Sin tiendas</span>;
+      const hiddenCount = product.store_products.filter((sp) => !sp.is_active).length;
 
       return (
-        <div className={styles.priceCell}>
-          <button className={styles.viewPricesButton} onClick={() => handleOpenEditPage(product.id)}>
-            {formatCurrency(link.price)}
-          </button>
-          <span className={`${styles.statusPill} ${link.is_active ? styles.statusPillActive : styles.statusPillInactive}`}>
-            {link.is_active ? 'Visible' : 'Oculto'}
+        <span className={styles.priceCell}>
+          <span className={styles.priceText}>
+            <span className={styles.price}>
+              {formatPriceRange(product.store_products.map((sp) => sp.price))}
+            </span>
+            <span className={styles.storeCount}>
+              {total === 1 ? '1 tienda' : `${total} tiendas`}
+            </span>
           </span>
-        </div>
+          {hiddenCount > 0 && (
+            <span title={`Oculto en el POS de ${hiddenCount} de ${total} tiendas`}>
+              <Badge tone="warning" icon="bx-hide">
+                {hiddenCount === 1 ? '1 oculta' : `${hiddenCount} ocultas`}
+              </Badge>
+            </span>
+          )}
+        </span>
       );
-    }
+    };
 
-    const total = product.store_products.length;
-    const hiddenCount = product.store_products.filter((sp) => !sp.is_active).length;
-
-    return (
-      <div className={styles.priceCell}>
-        <button className={styles.viewPricesButton} onClick={() => handleOpenEditPage(product.id)}>
-          Ver Precios ({total})
-        </button>
-        {hiddenCount > 0 && (
-          <span
-            className={`${styles.statusPill} ${styles.statusPillInactive}`}
-            title={`Oculto en el POS de ${hiddenCount} de ${total} tiendas`}
-          >
-            {hiddenCount === 1 ? '1 oculta' : `${hiddenCount} ocultas`}
+    return [
+      {
+        key: 'product',
+        header: 'Producto',
+        width: '40%',
+        mobile: 'title',
+        render: (product) => (
+          <span className={styles.productCell}>
+            <Thumbnail src={product.image_url} alt="" />
+            <button
+              type="button"
+              className={styles.productName}
+              onClick={() => navigate(`/management/products/${product.id}`)}
+            >
+              {product.name}
+            </button>
           </span>
-        )}
-      </div>
-    );
-  };
+        ),
+      },
+      {
+        key: 'category',
+        header: 'Categoría',
+        muted: true,
+        fallback: 'Sin categoría',
+        render: (product) => product.categories?.name,
+      },
+      {
+        key: 'price',
+        header: 'Precio',
+        render: renderPriceCell,
+      },
+    ];
+  }, [selectedStoreFilter, navigate]);
 
-  if (isLoading) return <div>Cargando productos...</div>;
-  if (error) return <div>Error: {error.message}</div>;
+  const count = allProducts.length;
+  const subtitle = isLoading
+    ? 'Cargando…'
+    : hasFilters
+      ? `${filteredAndSearchedProducts.length} de ${count} productos`
+      : `${count} ${count === 1 ? 'producto registrado' : 'productos registrados'}`;
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1>Gestión de Productos</h1>
-        <div className={styles.controls}>
-          <select
-            className={styles.storeFilter}
-            value={selectedStoreFilter ?? ''}
-            onChange={(e) => {
-              setSelectedStoreFilter(e.target.value === '' ? null : e.target.value);
-              setCurrentPage(1);
-            }}
-          >
-            <option value="">Todas las Tiendas</option>
-            {stores.map(store => (
-              <option key={store.id} value={store.id}>{store.name}</option>
-            ))}
-          </select>
-          <select
-            className={styles.storeFilter}
-            value={statusFilter}
-            onChange={(e) => {
-              setStatusFilter(e.target.value as StatusFilter);
-              setCurrentPage(1);
-            }}
-          >
-            <option value="all">Todos los estados</option>
-            <option value="visible">Visibles en POS</option>
-            <option value="hidden">Ocultos en POS</option>
-          </select>
-          <input
-            type="search"
-            placeholder="Buscar producto..."
-            className={styles.searchBar}
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1);
-            }}
-          />
-        </div>
-        <button onClick={handleOpenCreateModal} className={styles.addButton}>
-          <i className='bx bx-plus'></i> Añadir Producto
-        </button>
+    <div>
+      <PageHeader
+        title="Productos"
+        subtitle={!error && subtitle}
+        actions={
+          <Button icon="bx-plus" onClick={handleOpenCreateModal} iconOnlyOnMobile>
+            Añadir producto
+          </Button>
+        }
+      />
+
+      <div className={styles.toolbar} ref={listTopRef}>
+        <Input
+          type="search"
+          icon="bx-search"
+          placeholder="Buscar producto…"
+          aria-label="Buscar producto"
+          className={styles.search}
+          value={searchTerm}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setCurrentPage(1);
+          }}
+          onClear={() => {
+            setSearchTerm('');
+            setCurrentPage(1);
+          }}
+        />
+        <SearchableSelect
+          options={storeOptions}
+          value={selectedStoreFilter ?? ALL_STORES}
+          onChange={(value) => {
+            setSelectedStoreFilter(value === ALL_STORES ? null : value);
+            setCurrentPage(1);
+          }}
+          label="Tienda"
+          searchPlaceholder="Buscar tienda…"
+          emptyMessage="No hay tiendas con ese nombre"
+          className={styles.storeFilter}
+        />
+        <SegmentedControl
+          options={STATUS_OPTIONS}
+          value={statusFilter}
+          onChange={(value) => {
+            setStatusFilter(value);
+            setCurrentPage(1);
+          }}
+          ariaLabel="Estado en el punto de venta"
+          className={styles.statusFilter}
+        />
       </div>
 
-      {totalPages > 1 && (
-        <div className={styles.paginationTop}>
-          <button onClick={() => handlePageChange(page - 1)} disabled={page === 1} className={styles.paginationButton}>
-            <i className='bx bx-chevron-left'></i>
-          </button>
-          <span>Página {page} de {totalPages}</span>
-          <button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages} className={styles.paginationButton}>
-            <i className='bx bx-chevron-right'></i>
-          </button>
-        </div>
-      )}
-
-      {currentProducts.length === 0 ? (
-        <div className={styles.emptyState}>
-          <p>No se encontraron productos con los filtros aplicados.</p>
-          <p>Intenta ajustar la búsqueda o los filtros.</p>
-        </div>
+      {error ? (
+        <EmptyState
+          tone="danger"
+          icon="bx-error-circle"
+          title="No se pudieron cargar los productos"
+          description={error.message}
+          action={
+            <Button variant="secondary" icon="bx-refresh" onClick={() => refetch()}>
+              Reintentar
+            </Button>
+          }
+        />
       ) : (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Imagen</th>
-              <th>Nombre</th>
-              <th>Categoría</th>
-              <th>Precios</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentProducts.map(product => (
-              <tr key={product.id}>
-                <td>
-                  {product.image_url ? (
-                    <img src={product.image_url} alt={product.name} className={styles.productImage} />
-                  ) : (
-                    <div className={styles.productImagePlaceholder}>
-                      <i className='bx bx-image'></i>
-                    </div>
-                  )}
-                </td>
-                <td>{product.name}</td>
-                <td>{product.categories?.name || 'Sin categoría'}</td>
-                <td>{renderPriceCell(product)}</td>
-                <td className={styles.actions}>
-                  <button onClick={() => handleOpenEditPage(product.id)} className={styles.actionButton}>
-                    <i className='bx bx-pencil'></i>
-                  </button>
-                  <button onClick={() => handleDelete(product.id)} className={`${styles.actionButton} ${styles.deleteButton}`}>
-                    <i className='bx bx-trash'></i>
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <>
+          <DataTable
+            caption="Productos"
+            columns={columns}
+            rows={currentProducts}
+            rowKey={(product) => product.id}
+            loading={isLoading}
+            skeletonRows={6}
+            actions={(product) => (
+              <>
+                <IconButton
+                  icon="bx-pencil"
+                  label={`Ver y editar ${product.name}`}
+                  tooltip="Ver y editar"
+                  variant="brand"
+                  size="sm"
+                  onClick={() => handleOpenEditPage(product.id)}
+                />
+                <IconButton
+                  icon="bx-trash"
+                  label={`Eliminar ${product.name}`}
+                  tooltip="Eliminar"
+                  variant="danger"
+                  size="sm"
+                  onClick={() => setProductToDelete(product)}
+                />
+              </>
+            )}
+            empty={
+              hasFilters ? (
+                <EmptyState
+                  icon="bx-search-alt"
+                  title="No se encontraron productos"
+                  description="Intenta ajustar la búsqueda o los filtros."
+                  action={
+                    <Button variant="secondary" icon="bx-x" onClick={clearFilters}>
+                      Limpiar filtros
+                    </Button>
+                  }
+                />
+              ) : (
+                <EmptyState
+                  icon="bx-package"
+                  title="Aún no hay productos"
+                  description="Crea tu primer producto y asígnale precio en cada tienda."
+                  action={
+                    <Button icon="bx-plus" onClick={handleOpenCreateModal}>
+                      Añadir producto
+                    </Button>
+                  }
+                />
+              )
+            }
+          />
+
+          <Pagination
+            page={page}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            totalItems={filteredAndSearchedProducts.length}
+            pageSize={PRODUCTS_PER_PAGE}
+          />
+        </>
       )}
 
-      <Modal isOpen={isModalOpen} onClose={handleCloseModal} title={editingProduct ? "Editar Producto" : "Crear Nuevo Producto"}>
-        <ProductForm productToEdit={editingProduct} onFormSubmit={handleProductSaved} />
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title={editingProduct ? 'Editar producto' : 'Nuevo producto'}
+        description="Precio y visibilidad se configuran por tienda."
+        size="lg"
+      >
+        <ProductForm
+          productToEdit={editingProduct}
+          onFormSubmit={handleProductSaved}
+          onCancel={handleCloseModal}
+        />
       </Modal>
+
+      <ConfirmDialog
+        isOpen={!!productToDelete}
+        title="¿Eliminar producto?"
+        message={
+          productToDelete && (
+            <>
+              Se eliminará <strong>{productToDelete.name}</strong> con sus precios en todas las
+              tiendas. Esta acción no se puede deshacer.
+            </>
+          )
+        }
+        confirmLabel="Eliminar"
+        tone="danger"
+        icon="bx-trash"
+        loading={deleteProduct.isPending}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setProductToDelete(null)}
+      />
     </div>
   );
 };

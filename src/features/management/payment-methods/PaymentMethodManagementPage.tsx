@@ -1,18 +1,52 @@
 // src/features/management/payment-methods/PaymentMethodManagementPage.tsx
 
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import { usePaymentMethods, useDeletePaymentMethod } from '../../../hooks/queries';
 import type { PaymentMethod } from '../../../types';
 import { Modal } from '../../../components/ui/Modal';
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
+import { PageHeader } from '../../../components/ui/PageHeader';
+import { DataTable, type DataTableColumn } from '../../../components/ui/DataTable';
+import { EmptyState } from '../../../components/ui/EmptyState';
+import { Button } from '../../../components/ui/Button';
+import { IconButton } from '../../../components/ui/IconButton';
 import { PaymentMethodForm } from './components/PaymentMethodForm';
-import toast from 'react-hot-toast';
 import styles from './PaymentMethodManagementPage.module.css';
+
+const COLUMNS: DataTableColumn<PaymentMethod>[] = [
+  {
+    key: 'name',
+    header: 'Nombre',
+    width: '32%',
+    strong: true,
+    mobile: 'title',
+    render: (method) => method.name,
+  },
+  {
+    key: 'description',
+    header: 'Descripción',
+    muted: true,
+    mobile: 'subtitle',
+    render: (method) =>
+      method.description || <span className={styles.placeholder}>Sin descripción</span>,
+  },
+];
+
+/* Si el método ya se usó en ventas, Postgres lo impide (y responde en inglés) */
+const deleteErrorMessage = (err: unknown) => {
+  const message = err instanceof Error ? err.message : 'Error desconocido';
+  return message.includes('foreign key')
+    ? 'tiene ventas registradas y no se puede eliminar.'
+    : message;
+};
 
 export const PaymentMethodManagementPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMethod, setEditingMethod] = useState<PaymentMethod | null>(null);
+  const [methodToDelete, setMethodToDelete] = useState<PaymentMethod | null>(null);
 
-  const { data: paymentMethods = [], isLoading, error } = usePaymentMethods();
+  const { data: paymentMethods = [], isLoading, error, refetch } = usePaymentMethods();
   const deleteMethod = useDeletePaymentMethod();
 
   const handleOpenCreateModal = () => {
@@ -33,69 +67,97 @@ export const PaymentMethodManagementPage = () => {
   const handleMethodSaved = (successMessage: string) => {
     handleCloseModal();
     toast.success(successMessage);
-    // React Query invalida automáticamente via el hook del form
+    // React Query invalida automáticamente vía el formulario
   };
 
-  const handleDelete = async (methodId: number) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este método de pago?")) {
-      try {
-        await deleteMethod.mutateAsync(methodId);
-        toast.success("Método de pago eliminado con éxito.");
-      } catch (err: any) {
-        toast.error(`Error al eliminar: ${err.message}`);
-      }
+  const handleConfirmDelete = async () => {
+    if (!methodToDelete) return;
+    try {
+      await deleteMethod.mutateAsync(methodToDelete.id);
+      toast.success('Método de pago eliminado con éxito.');
+    } catch (err) {
+      toast.error(`Error al eliminar: ${deleteErrorMessage(err)}`);
+    } finally {
+      setMethodToDelete(null);
     }
   };
 
-  if (isLoading) return <div>Cargando métodos de pago...</div>;
-  if (error) return <div>Error: {(error as Error).message}</div>;
+  const count = paymentMethods.length;
+  const subtitle = isLoading
+    ? 'Cargando…'
+    : `${count} ${count === 1 ? 'método registrado' : 'métodos registrados'}`;
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1>Gestión de Métodos de Pago</h1>
-        <button onClick={handleOpenCreateModal} className={styles.addButton}>
-          <i className='bx bx-plus'></i> Añadir Método
-        </button>
-      </div>
+    <div className={styles.page}>
+      <PageHeader
+        title="Métodos de pago"
+        subtitle={!error && subtitle}
+        actions={
+          <Button icon="bx-plus" onClick={handleOpenCreateModal} iconOnlyOnMobile>
+            Añadir método
+          </Button>
+        }
+      />
 
-      {paymentMethods.length === 0 ? (
-        <div className={styles.emptyState}>
-          <p>No hay métodos de pago registrados.</p>
-          <p>Haz clic en "Añadir Método" para empezar.</p>
-        </div>
+      {error ? (
+        <EmptyState
+          tone="danger"
+          icon="bx-error-circle"
+          title="No se pudieron cargar los métodos de pago"
+          description={error.message}
+          action={
+            <Button variant="secondary" icon="bx-refresh" onClick={() => refetch()}>
+              Reintentar
+            </Button>
+          }
+        />
       ) : (
-        <table className={styles.table}>
-          <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Descripción</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paymentMethods.map(method => (
-              <tr key={method.id}>
-                <td>{method.name}</td>
-                <td>{method.description || 'N/A'}</td>
-                <td className={styles.actions}>
-                  <button onClick={() => handleOpenEditModal(method)} className={styles.actionButton}>
-                    <i className='bx bx-pencil'></i>
-                  </button>
-                  <button onClick={() => handleDelete(method.id)} className={`${styles.actionButton} ${styles.deleteButton}`}>
-                    <i className='bx bx-trash'></i>
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <DataTable
+          caption="Métodos de pago"
+          columns={COLUMNS}
+          rows={paymentMethods}
+          rowKey={(method) => method.id}
+          loading={isLoading}
+          actions={(method) => (
+            <>
+              <IconButton
+                icon="bx-edit-alt"
+                label={`Editar ${method.name}`}
+                tooltip="Editar"
+                variant="brand"
+                size="sm"
+                onClick={() => handleOpenEditModal(method)}
+              />
+              <IconButton
+                icon="bx-trash"
+                label={`Eliminar ${method.name}`}
+                tooltip="Eliminar"
+                variant="danger"
+                size="sm"
+                onClick={() => setMethodToDelete(method)}
+              />
+            </>
+          )}
+          empty={
+            <EmptyState
+              icon="bx-credit-card"
+              title="Aún no hay métodos de pago"
+              description="Agrega los métodos con los que cobras, como efectivo, tarjeta o Yape."
+              action={
+                <Button icon="bx-plus" onClick={handleOpenCreateModal}>
+                  Añadir método
+                </Button>
+              }
+            />
+          }
+        />
       )}
 
       <Modal
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        title={editingMethod ? "Editar Método de Pago" : "Crear Nuevo Método de Pago"}
+        title={editingMethod ? 'Editar método de pago' : 'Nuevo método de pago'}
+        description="Así aparece al cobrar en el punto de venta."
       >
         <PaymentMethodForm
           methodToEdit={editingMethod}
@@ -103,6 +165,24 @@ export const PaymentMethodManagementPage = () => {
           onClose={handleCloseModal}
         />
       </Modal>
+
+      <ConfirmDialog
+        isOpen={!!methodToDelete}
+        title="¿Eliminar método de pago?"
+        message={
+          methodToDelete && (
+            <>
+              Se eliminará <strong>{methodToDelete.name}</strong>. Esta acción no se puede deshacer.
+            </>
+          )
+        }
+        confirmLabel="Eliminar"
+        tone="danger"
+        icon="bx-trash"
+        loading={deleteMethod.isPending}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setMethodToDelete(null)}
+      />
     </div>
   );
 };

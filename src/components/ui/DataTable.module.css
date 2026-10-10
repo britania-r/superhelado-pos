@@ -1,0 +1,190 @@
+/* src/components/ui/DataTable.module.css */
+
+/* ════════════════════════════════════════════════════════════════
+   Tabla (computadora y tablet)
+   ════════════════════════════════════════════════════════════════ */
+
+.wrapper {
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table th {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-1);
+  background-color: var(--bg-subtle);
+  color: var(--text-2);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Esquinas redondeadas sin recortar los tooltips de las acciones */
+.table th:first-child { border-top-left-radius: var(--radius-lg); }
+.table th:last-child { border-top-right-radius: var(--radius-lg); }
+.table tbody tr:last-child td:first-child { border-bottom-left-radius: var(--radius-lg); }
+.table tbody tr:last-child td:last-child { border-bottom-right-radius: var(--radius-lg); }
+
+.table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-1);
+  color: var(--text-1);
+  vertical-align: middle;
+  overflow-wrap: anywhere; /* correos y textos largos no ensanchan la tabla */
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr {
+  transition: background-color var(--dur) var(--ease-out);
+}
+
+.table tbody tr:hover {
+  background-color: #FDFCF7;
+}
+
+.table .strong {
+  font-weight: 600;
+}
+
+.table .muted {
+  color: var(--text-2);
+}
+
+/* Columna de acciones: lo justo, pegada a la derecha */
+.table .actionsCell {
+  width: 1%;
+  padding-right: 10px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Tarjetas (celular)
+   ════════════════════════════════════════════════════════════════ */
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  list-style: none;
+}
+
+.card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: 12px 8px 12px 14px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-xs);
+}
+
+.cardBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cardTitle {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.cardSubtitle {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  overflow-wrap: anywhere;
+}
+
+.cardFields {
+  display: grid;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.cardField {
+  display: flex;
+  gap: var(--space-sm);
+  font-size: var(--fs-sm);
+}
+
+.cardField dt {
+  flex-shrink: 0;
+  min-width: 84px;
+  color: var(--text-2);
+}
+
+.cardField dd {
+  min-width: 0;
+  color: var(--text-1);
+  overflow-wrap: anywhere;
+}
+
+/* Botones de la tarjeta: más grandes para el dedo */
+.cardActions {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+  margin-top: -4px;
+}
+
+.cardActions button {
+  width: 38px;
+  height: 38px;
+  font-size: 20px;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Carga
+   ════════════════════════════════════════════════════════════════ */
+
+.skeleton {
+  display: block;
+  height: 12px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, #EFECE1 25%, #F8F6EE 50%, #EFECE1 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s linear infinite;
+}
+
+.skeletonTitle {
+  height: 16px;
+  margin-bottom: 6px;
+}
+
+.skeletonActions {
+  display: inline-block;
+  width: 64px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}

@@ -17,6 +17,8 @@ interface ButtonProps extends ComponentProps<'button'> {
   icon?: string;
   iconRight?: string;
   fullWidth?: boolean;
+  /** En celular muestra solo el ícono (el texto queda para lectores de pantalla) */
+  iconOnlyOnMobile?: boolean;
 }
 
 export const Button = ({
@@ -26,6 +28,7 @@ export const Button = ({
   icon,
   iconRight,
   fullWidth = false,
+  iconOnlyOnMobile = false,
   type = 'button',
   disabled,
   className,
@@ -41,6 +44,7 @@ export const Button = ({
       styles[variant],
       styles[size],
       fullWidth && styles.fullWidth,
+      iconOnlyOnMobile && styles.iconOnlyOnMobile,
       className
     )}
     {...rest}

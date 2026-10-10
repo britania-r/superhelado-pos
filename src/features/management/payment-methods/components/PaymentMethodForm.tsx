@@ -3,10 +3,15 @@
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
+import toast from 'react-hot-toast';
 import { createPaymentMethod, updatePaymentMethod } from '../../../../api/paymentMethods.api';
 import type { PaymentMethod } from '../../../../types';
+import { Field } from '../../../../components/ui/Field';
+import { Input } from '../../../../components/ui/Input';
+import { Textarea } from '../../../../components/ui/Textarea';
+import { Button } from '../../../../components/ui/Button';
+import { FormActions } from '../../../../components/ui/FormActions';
 import styles from './PaymentMethodForm.module.css';
-import toast from 'react-hot-toast';
 
 interface PaymentMethodFormData {
   name: string;
@@ -48,35 +53,40 @@ export const PaymentMethodForm = ({ methodToEdit, onFormSubmit, onClose }: Payme
       await queryClient.invalidateQueries({ queryKey: ['payment-methods'] });
       onFormSubmit(message);
       onClose();
-    } catch (err: any) {
-      toast.error(`Error: ${err.message}`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error desconocido';
+      toast.error(`Error: ${message}`);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-      <div className={styles.formGroup}>
-        <label htmlFor="name">Nombre</label>
-        <input
-          id="name"
-          type="text"
-          {...register("name", { required: "El nombre es obligatorio" })}
-          className={styles.input}
+    <form onSubmit={handleSubmit(onSubmit)} className={styles.form} noValidate>
+      <Field label="Nombre" htmlFor="payment-method-name" error={errors.name?.message} required>
+        <Input
+          id="payment-method-name"
+          placeholder="Efectivo"
+          autoComplete="off"
+          {...register('name', { required: 'El nombre es obligatorio' })}
         />
-        {errors.name && <span className={styles.errorText}>{errors.name.message}</span>}
-      </div>
-      <div className={styles.formGroup}>
-        <label htmlFor="description">Descripción (opcional)</label>
-        <textarea
-          id="description"
-          {...register("description")}
+      </Field>
+
+      <Field label="Descripción" htmlFor="payment-method-description" hint="Opcional.">
+        <Textarea
+          id="payment-method-description"
           rows={3}
-          className={styles.input}
-        ></textarea>
-      </div>
-      <button type="submit" disabled={isSubmitting} className={styles.submitButton}>
-        {isSubmitting ? 'Guardando...' : 'Guardar Método'}
-      </button>
+          placeholder="Pago en efectivo en caja"
+          {...register('description')}
+        />
+      </Field>
+
+      <FormActions>
+        <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+          Cancelar
+        </Button>
+        <Button type="submit" loading={isSubmitting}>
+          {methodToEdit ? 'Guardar cambios' : 'Crear método'}
+        </Button>
+      </FormActions>
     </form>
   );
 };

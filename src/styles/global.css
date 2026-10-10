@@ -17,6 +17,7 @@ html {
 /* 2. Base */
 body {
   min-height: 100dvh;
+  overflow-x: clip; /* la página nunca se ensancha de lado */
   font-family: var(--font-body);
   font-size: var(--fs-md);
   line-height: 1.5;

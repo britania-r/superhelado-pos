@@ -22,6 +22,7 @@
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-lg);
   outline: none;
+  overflow: hidden; /* recorta el pie a las esquinas redondeadas */
   animation: popIn var(--dur-slow) var(--ease-out);
 }
 
@@ -52,12 +53,14 @@
   color: var(--text-2);
 }
 
+/* --modal-pad: margen interno; FormActions lo usa para ir de borde a borde */
 .body {
+  --modal-pad: var(--space-lg);
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: var(--space-sm) var(--space-lg) var(--space-lg);
+  padding: var(--space-sm) var(--modal-pad) var(--modal-pad);
 }
 
 .footer {
@@ -67,7 +70,6 @@
   padding: var(--space-md) var(--space-lg);
   border-top: 1px solid var(--border-1);
   background-color: var(--bg-subtle);
-  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
 }
 
 /* ── Celular: hoja que sube desde abajo ── */
@@ -101,12 +103,11 @@
   }
 
   .body {
-    padding: var(--space-sm) var(--space-md) var(--space-md);
+    --modal-pad: var(--space-md);
   }
 
   .footer {
     padding: var(--space-sm) var(--space-md);
-    border-radius: 0;
   }
 
   /* Botones del pie a lo ancho, fáciles de tocar */

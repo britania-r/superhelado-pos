@@ -118,3 +118,30 @@
 .fullWidth {
   width: 100%;
 }
+
+/* ── Solo ícono en celular (por ejemplo "+" en vez de "Añadir método") ── */
+@media (max-width: 640px) {
+  .iconOnlyOnMobile {
+    position: relative;
+    width: var(--control-h);
+    padding: 0;
+  }
+
+  .iconOnlyOnMobile.sm { width: var(--control-h-sm); }
+  .iconOnlyOnMobile.lg { width: var(--control-h-lg); }
+
+  .iconOnlyOnMobile .icon {
+    font-size: 1.6em;
+  }
+
+  /* El texto sigue ahí para lectores de pantalla */
+  .iconOnlyOnMobile .label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+}

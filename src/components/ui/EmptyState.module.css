@@ -1,0 +1,56 @@
+/* src/components/ui/EmptyState.module.css */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-2xl) var(--space-md);
+  border: 1.5px dashed var(--border-2);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-surface);
+  text-align: center;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-bottom: var(--space-md);
+  border-radius: 50%;
+  font-size: 26px;
+}
+
+.neutral .icon {
+  background-color: var(--brand-pink-soft);
+  color: var(--brand-magenta-ink);
+}
+
+.danger {
+  border-color: #F3C4CC;
+}
+
+.danger .icon {
+  background-color: var(--danger-soft);
+  color: var(--danger-ink);
+}
+
+.title {
+  font-size: var(--fs-lg);
+}
+
+.description {
+  max-width: 42ch;
+  margin-top: var(--space-xs);
+  color: var(--text-2);
+}
+
+.action {
+  margin-top: var(--space-md);
+}
+
+@media (max-width: 640px) {
+  .empty {
+    padding: var(--space-xl) var(--space-md);
+  }
+}

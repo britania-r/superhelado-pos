@@ -7,13 +7,18 @@
 }
 
 .collapsed {
-  --sidebar-w: 76px;
+  --sidebar-w: 54px;
 }
 
+/* Margen alrededor de cada módulo: 1rem en computadora, 0.5rem en celular */
 .content {
+  --page-pad: 1rem;
   min-width: 0;
   min-height: 100dvh;
-  padding: var(--space-lg);
+  padding: var(--page-pad);
+  /* Si algo es más ancho que la pantalla (una tabla), se desplaza aquí dentro.
+     Sin esto, el celular "aleja" toda la página y el menú queda fuera de vista. */
+  overflow-x: auto;
   transition: margin-left var(--dur-slow) var(--ease-out);
 }
 
@@ -50,7 +55,7 @@
 /* Celular y tablet: debajo de la barra superior, con menos margen */
 @media (max-width: 1023.98px) {
   .content {
+    --page-pad: 0.5rem;
     min-height: calc(100dvh - 56px);
-    padding: var(--space-md);
   }
 }

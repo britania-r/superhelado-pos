@@ -1,0 +1,24 @@
+/* src/components/ui/FormActions.module.css */
+
+/* --modal-pad lo define el Modal; fuera de un modal vale 0.
+   El sticky se mide sin el padding del modal: el bottom negativo
+   lo compensa para que la franja quede pegada al borde inferior. */
+.actions {
+  position: sticky;
+  bottom: calc(var(--modal-pad, 0px) * -1);
+  z-index: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-sm);
+  margin: var(--space-lg) calc(var(--modal-pad, 0px) * -1) calc(var(--modal-pad, 0px) * -1);
+  padding: 12px var(--modal-pad, 0px);
+  border-top: 1px solid var(--border-1);
+  background-color: var(--bg-subtle);
+}
+
+/* Celular: botones a lo ancho, fáciles de tocar */
+@media (max-width: 640px) {
+  .actions > * {
+    flex: 1;
+  }
+}

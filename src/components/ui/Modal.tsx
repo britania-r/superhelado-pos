@@ -18,7 +18,7 @@ interface ModalProps {
   /** Botones fijos al pie (por ejemplo Cancelar · Guardar) */
   footer?: ReactNode;
   size?: 'sm' | 'md' | 'lg';
-  /** false: no se cierra con Escape ni clic afuera (útil mientras guarda) */
+  /** false: desactiva la X (útil mientras guarda) */
   dismissible?: boolean;
 }
 
@@ -47,6 +47,8 @@ const trapTab = (event: KeyboardEvent, container: HTMLElement) => {
   }
 };
 
+/* Solo se cierra a mano: con la X o con los botones del propio modal.
+   Ni el clic afuera ni Escape lo cierran, para no perder lo escrito. */
 export const Modal = ({
   isOpen,
   onClose,
@@ -62,14 +64,6 @@ export const Modal = ({
   const descriptionId = `${modalId}-description`;
   const panelRef = useRef<HTMLDivElement>(null);
 
-  // Las últimas versiones de onClose y dismissible, sin reiniciar el efecto
-  const onCloseRef = useRef(onClose);
-  const dismissibleRef = useRef(dismissible);
-  useEffect(() => {
-    onCloseRef.current = onClose;
-    dismissibleRef.current = dismissible;
-  });
-
   useEffect(() => {
     if (!isOpen) return;
 
@@ -79,11 +73,7 @@ export const Modal = ({
     panelRef.current?.focus({ preventScroll: true });
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!isTopModal(modalId)) return;
-      if (event.key === 'Escape' && dismissibleRef.current) {
-        event.preventDefault();
-        onCloseRef.current();
-      } else if (event.key === 'Tab' && panelRef.current) {
+      if (event.key === 'Tab' && isTopModal(modalId) && panelRef.current) {
         trapTab(event, panelRef.current);
       }
     };
@@ -97,14 +87,24 @@ export const Modal = ({
     };
   }, [isOpen, modalId]);
 
+  /* Clic en el fondo: no cierra, solo un pequeño rebote para indicar
+     que hay que usar los botones */
+  const nudge = () => {
+    const panel = panelRef.current;
+    if (!panel || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    panel.animate(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.015)' }, { transform: 'scale(1)' }],
+      { duration: 260, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }
+    );
+  };
+
   if (!isOpen) return null;
 
   return createPortal(
     <div
       className={styles.overlay}
       onMouseDown={(event) => {
-        // Solo si el clic empieza en el fondo (no al soltar un arrastre desde un campo)
-        if (event.target === event.currentTarget && dismissible) onClose();
+        if (event.target === event.currentTarget) nudge();
       }}
     >
       <div

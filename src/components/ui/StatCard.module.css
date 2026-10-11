@@ -1,0 +1,78 @@
+/* src/components/ui/StatCard.module.css */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-xs);
+}
+
+/* El número principal del resumen */
+.emphasis {
+  border-color: rgba(59, 76, 160, 0.35);
+  background-color: var(--brand-blue-50);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+}
+
+/* Cifra grande: números proporcionales (las columnas de tablas usan tabulares) */
+.value {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--text-1);
+  overflow-wrap: anywhere;
+}
+
+.hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+}
+
+.neutral { background-color: var(--bg-subtle); color: var(--text-2); }
+.brand { background-color: var(--brand-blue-soft); color: var(--brand-blue); }
+.accent { background-color: var(--brand-pink-soft); color: var(--brand-magenta-ink); }
+.success { background-color: var(--success-soft); color: var(--success-ink); }
+.warning { background-color: var(--warning-soft); color: var(--warning-ink); }
+.danger { background-color: var(--danger-soft); color: var(--danger-ink); }
+
+@media (max-width: 640px) {
+  .card {
+    padding: 10px 12px;
+  }
+
+  .value {
+    font-size: 1.3rem;
+  }
+}

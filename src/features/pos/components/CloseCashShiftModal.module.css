@@ -1,55 +1,90 @@
 /* src/features/pos/components/CloseCashShiftModal.module.css */
+
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
 }
 
-.formGroup {
+/* Apertura + ventas = esperado */
+.breakdown {
+  padding: 4px 14px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-subtle);
+}
+
+.line {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.formGroup label {
-  font-weight: 500;
-}
-
-.formGroup input {
-  width: 100%;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  font-size: 0.9rem;
-}
-
-.errorText {
-  color: var(--color-error);
-  font-size: 0.8rem;
-}
-
-.infoField {
-  display: flex;
+  align-items: baseline;
   justify-content: space-between;
+  gap: var(--space-sm);
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--border-2);
+  font-size: var(--fs-sm);
+}
+
+.line:last-child {
+  border-bottom: none;
+}
+
+.line dt {
+  color: var(--text-2);
+}
+
+.line dd {
+  color: var(--text-1);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.expected dt {
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.expected dd {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  color: var(--brand-ink);
+}
+
+/* Diferencia en vivo: color + ícono + texto */
+.difference {
+  display: flex;
   align-items: center;
-  font-size: 1.1rem;
-  font-weight: 600;
-  padding: var(--space-sm) 0;
-  border-bottom: 1px dashed var(--color-border);
+  gap: 10px;
+  padding: 10px 14px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  transition: background-color var(--dur) var(--ease-out), border-color var(--dur) var(--ease-out);
 }
 
-.submitButton {
-  align-self: flex-end;
-  padding: 0.75rem 1.5rem;
-  background-color: var(--color-primary);
-  color: var(--color-text-on-primary);
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
+.differenceLabel {
+  flex: 1;
   font-weight: 600;
 }
 
-.submitButton:disabled {
-  background-color: var(--color-primary-light);
-  cursor: not-allowed;
+.differenceValue {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+}
+
+.success {
+  border-color: rgba(47, 143, 95, 0.3);
+  background-color: var(--success-soft);
+  color: var(--success-ink);
+}
+
+.warning {
+  border-color: rgba(199, 122, 18, 0.3);
+  background-color: var(--warning-soft);
+  color: var(--warning-ink);
+}
+
+.danger {
+  border-color: rgba(200, 54, 75, 0.25);
+  background-color: var(--danger-soft);
+  color: var(--danger-ink);
 }

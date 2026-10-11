@@ -1,45 +1,33 @@
 /* src/features/pos/components/OpenCashShiftModal.module.css */
+
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
 }
 
-.formGroup {
+.hero {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background-color: var(--brand-blue-50);
 }
 
-.formGroup label {
-  font-weight: 500;
+.heroIcon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background-color: var(--brand-blue);
+  color: #FFFFFF;
+  font-size: 22px;
 }
 
-.formGroup input {
-  width: 100%;
-  padding: 0.6rem 0.8rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  font-size: 0.9rem;
-}
-
-.errorText {
-  color: var(--color-error);
-  font-size: 0.8rem;
-}
-
-.submitButton {
-  align-self: flex-end;
-  padding: 0.75rem 1.5rem;
-  background-color: var(--color-primary);
-  color: var(--color-text-on-primary);
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.submitButton:disabled {
-  background-color: var(--color-primary-light);
-  cursor: not-allowed;
+.heroText {
+  font-size: var(--fs-sm);
+  color: var(--brand-ink);
 }

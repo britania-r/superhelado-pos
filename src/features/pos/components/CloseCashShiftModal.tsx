@@ -1,11 +1,19 @@
-// FILE: src/features/pos/components/CloseCashShiftModal.tsx
-// DESC: Reemplaza todo el contenido de este archivo.
+// src/features/pos/components/CloseCashShiftModal.tsx
 
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { v2_closeCashShift } from '../../../api/shifts.api';
 import type { CashShift } from '../../../types';
 import toast from 'react-hot-toast';
 import { formatCurrency } from '../../../lib/formatters';
+import { getErrorMessage } from '../../../lib/errors';
+import { getCashDifferenceStatus } from '../../../lib/cash';
+import { cx } from '../../../lib/cx';
+import { Field } from '../../../components/ui/Field';
+import { Input } from '../../../components/ui/Input';
+import { Button } from '../../../components/ui/Button';
+import { FormActions } from '../../../components/ui/FormActions';
+import { Alert } from '../../../components/ui/Alert';
+import { Badge } from '../../../components/ui/Badge';
 import styles from './CloseCashShiftModal.module.css';
 
 interface CloseShiftFormData {
@@ -26,14 +34,15 @@ export const CloseCashShiftModal = ({ shift, totalSales, onShiftClosed, onClose 
       counted_balance: 0
     }
   });
-  
-  // --- CAMBIO: Aseguramos que 'countedBalance' sea siempre un número ---
-  const countedBalanceInput = watch('counted_balance');
-  const countedBalance = typeof countedBalanceInput === 'number' ? countedBalanceInput : 0;
 
-  const realSalesCalculated = totalSales; 
+  // Aseguramos que 'countedBalance' sea siempre un número
+  const countedBalanceInput = watch('counted_balance');
+  const countedBalance = typeof countedBalanceInput === 'number' && !Number.isNaN(countedBalanceInput) ? countedBalanceInput : 0;
+
+  const realSalesCalculated = totalSales;
   const expectedBalance = shift.opening_balance + realSalesCalculated;
   const difference = countedBalance - expectedBalance;
+  const status = getCashDifferenceStatus(difference);
 
   const onSubmit: SubmitHandler<CloseShiftFormData> = async (data) => {
     try {
@@ -43,57 +52,70 @@ export const CloseCashShiftModal = ({ shift, totalSales, onShiftClosed, onClose 
         calculatedSales: realSalesCalculated,
         countedBalance: data.counted_balance, // Aquí ya es un número gracias a RHF
       });
-      
+
       onShiftClosed();
       onClose();
-    } catch (err: any) {
-      toast.error(`Error al cerrar caja: ${err.message}`);
+    } catch (err) {
+      toast.error(`Error al cerrar caja: ${getErrorMessage(err)}`);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-      <p>Confirma el monto en caja al cerrar el día.</p>
-      
-      <div className={styles.infoField}>
-        <span>Monto de Apertura:</span>
-        <span>{formatCurrency(shift.opening_balance)}</span>
-      </div>
-      <div className={styles.infoField}>
-        <span>Ventas del Día:</span>
-        <span>{formatCurrency(realSalesCalculated)}</span>
-      </div>
-      <div className={styles.infoField}>
-        <span>Saldo Esperado:</span>
-        <span style={{ fontWeight: 'bold' }}>{formatCurrency(expectedBalance)}</span>
-      </div>
+    <form onSubmit={handleSubmit(onSubmit)} className={styles.form} noValidate>
+      {/* ── Lo que debería haber en caja ── */}
+      <dl className={styles.breakdown}>
+        <div className={styles.line}>
+          <dt>Monto de apertura</dt>
+          <dd>{formatCurrency(shift.opening_balance)}</dd>
+        </div>
+        <div className={styles.line}>
+          <dt>Ventas del día</dt>
+          <dd>+ {formatCurrency(realSalesCalculated)}</dd>
+        </div>
+        <div className={cx(styles.line, styles.expected)}>
+          <dt>Saldo esperado</dt>
+          <dd>{formatCurrency(expectedBalance)}</dd>
+        </div>
+      </dl>
 
-      <div className={styles.formGroup}>
-        <label htmlFor="counted_balance">Monto Contado en Caja</label>
-        <input 
+      {realSalesCalculated === 0 && (
+        <Alert tone="info" title="Ventas del día en S/ 0.00">
+          Si hubo ventas hoy, cierra esta ventana y genera el reporte de hoy antes de cerrar la caja.
+        </Alert>
+      )}
+
+      {/* ── Lo que hay ── */}
+      <Field label="Monto contado en caja" htmlFor="counted_balance" error={errors.counted_balance?.message} required>
+        <Input
           id="counted_balance"
-          type="number" 
-          step="0.01" 
-          {...register('counted_balance', { 
-            required: "El monto contado es obligatorio.", 
+          type="number"
+          step="0.01"
+          inputMode="decimal"
+          size="lg"
+          prefixText="S/"
+          placeholder="0.00"
+          {...register('counted_balance', {
+            required: 'El monto contado es obligatorio.',
             valueAsNumber: true,
-            min: {value: 0, message: "El monto no puede ser negativo."}
-          })} 
-          className={styles.input}
-          placeholder='0.00'
+            min: { value: 0, message: 'El monto no puede ser negativo.' }
+          })}
         />
-        {errors.counted_balance && <span className={styles.errorText}>{errors.counted_balance.message}</span>}
+      </Field>
+
+      <div className={cx(styles.difference, styles[status.tone])} aria-live="polite">
+        <span className={styles.differenceLabel}>Diferencia</span>
+        <span className={styles.differenceValue}>{formatCurrency(difference)}</span>
+        <Badge tone={status.tone} icon={status.icon}>{status.label}</Badge>
       </div>
 
-      <div className={styles.infoField} style={{ color: difference !== 0 ? 'var(--color-error)' : 'var(--color-success)', fontWeight: 'bold' }}>
-        <span>Diferencia:</span>
-        {/* 'difference' ahora siempre será un número, por lo que no dará NaN */}
-        <span>{formatCurrency(difference)}</span>
-      </div>
-
-      <button type="submit" disabled={isSubmitting} className={styles.submitButton}>
-        {isSubmitting ? 'Cerrando...' : 'Cerrar Caja'}
-      </button>
+      <FormActions>
+        <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+          Cancelar
+        </Button>
+        <Button type="submit" icon="bx-log-out-circle" loading={isSubmitting}>
+          Cerrar caja
+        </Button>
+      </FormActions>
     </form>
   );
 };

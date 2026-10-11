@@ -1,193 +1,216 @@
-// FILE: src/features/reports/ReportsPage.tsx
-// DESC: Reemplaza todo el contenido de este archivo.
+// src/features/reports/ReportsPage.tsx
+// Reporte de ventas completo y explicado: resumen, hallazgos, tendencia, horas pico,
+// productos, categorías, pagos, tiendas y caja. Los datos vienen de las funciones rpt_*.
 
-import { useState, useEffect, useCallback, useRef } from 'react';
-import styles from './ReportsPage.module.css';
+import { useMemo, useState } from 'react';
+import { useIsFetching, useQueryClient } from '@tanstack/react-query';
+import { usePaymentMethods, useStores } from '../../hooks/queries';
+import { PageHeader } from '../../components/ui/PageHeader';
+import { Button } from '../../components/ui/Button';
+import { Alert } from '../../components/ui/Alert';
+import { ReportFilters } from './components/ReportFilters';
+import { SummarySection } from './sections/SummarySection';
+import { InsightsSection } from './sections/InsightsSection';
+import { TrendSection } from './sections/TrendSection';
+import { HoursSection } from './sections/HoursSection';
+import { ProductsSection } from './sections/ProductsSection';
+import { CategoriesSection } from './sections/CategoriesSection';
+import { PaymentsSection } from './sections/PaymentsSection';
+import { StoresSection } from './sections/StoresSection';
+import { CashSection } from './sections/CashSection';
+import { useReportData } from './useReportData';
+import { addDays, currentLimaHour, resolvePeriod, todayInLima, type DateRange, type PeriodPreset } from './lib/periods';
 import {
-  getDailySalesByStore,
-  getDailySalesByPaymentMethod,
-  v3_getDailySalesByProduct, // Asegurémonos de usar la última versión (v3)
-} from '../../api/reports.api';
-import type { Store } from '../../types';
-import toast from 'react-hot-toast';
-import { useUserStore } from '../../store/userStore';
-import { getStores } from '../../api/stores.api';
-import { ChartBar } from './components/ChartBar';
+  buildCategoryRows,
+  buildPaymentRows,
+  buildProductRows,
+  buildStoreRows,
+  productMoves,
+  summarizeCash,
+  totalsFromDays,
+} from './lib/metrics';
+import { buildInsights } from './lib/insights';
+import styles from './ReportsPage.module.css';
 
-// --- NUEVO: Helper para obtener la fecha de hoy en formato YYYY-MM-DD ---
-const getTodayDateString = () => {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-};
-
-type ReportSubType = 'store' | 'product' | 'payment_method';
+const SECTIONS = [
+  { id: 'resumen', label: 'Resumen' },
+  { id: 'hallazgos', label: 'Lo más importante' },
+  { id: 'tendencia', label: 'Tendencia' },
+  { id: 'horas', label: 'Horas pico' },
+  { id: 'productos', label: 'Productos' },
+  { id: 'categorias', label: 'Categorías' },
+  { id: 'pagos', label: 'Pagos' },
+  { id: 'tiendas', label: 'Tiendas' },
+  { id: 'caja', label: 'Caja' },
+];
 
 export const ReportsPage = () => {
-  const { profile, isLoading: isProfileLoading } = useUserStore();
-  const hasLoadedInitialData = useRef(false);
+  const today = todayInLima();
+  const [preset, setPreset] = useState<PeriodPreset>('last7');
+  const [custom, setCustom] = useState<DateRange>(() => ({ start: addDays(today, -6), end: today }));
+  const [storeId, setStoreId] = useState<string | null>(null);
 
-  /* filtros simplificados */
-  const [reportSubType, setReportSubType] = useState<ReportSubType>('product');
-  // --- CAMBIO: Usar el nuevo helper para la fecha inicial ---
-  const [selectedDate, setSelectedDate] = useState<string>(getTodayDateString());
-  const [stores, setStores] = useState<Store[]>([]);
-  const [selectedStoreFilter, setSelectedStoreFilter] = useState<string>('');
+  const queryClient = useQueryClient();
+  const fetching = useIsFetching({ queryKey: ['reports'] }) > 0;
+  const { data: stores = [], isLoading: storesLoading } = useStores();
+  const { data: paymentMethods = [] } = usePaymentMethods();
 
-  /* datos */
-  const [reportData, setReportData] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const period = useMemo(() => resolvePeriod(preset, custom, today), [preset, custom, today]);
+  const allStores = storeId === null;
+  const data = useReportData(period, storeId);
 
-  useEffect(() => {
-    const loadStores = async () => {
-      if (isProfileLoading || !profile) return;
-      try {
-        const list = await getStores();
-        setStores(list);
-        if (profile.role === 'vendedor' && profile.store_id) {
-          setSelectedStoreFilter(profile.store_id);
-        } else if (profile.role === 'admin' && list.length > 0 && !selectedStoreFilter) {
-          setSelectedStoreFilter(list[0].id);
-        }
-      } catch (err: any) {
-        toast.error(`Error cargando tiendas: ${err.message}`);
-      }
-    };
-    loadStores();
-  }, [isProfileLoading, profile, selectedStoreFilter]);
-
-  const transformDataForChart = useCallback(
-    (data: any[], labelKey: string, valueKey: string, datasetLabel: string) => ({
-      labels: data.map((d) => d[labelKey]),
-      datasets: [{
-        label: datasetLabel,
-        data: data.map((d) => d[valueKey]),
-        backgroundColor: 'rgba(74, 144, 226, 0.6)',
-        borderColor: 'rgba(74, 144, 226, 1)',
-        borderWidth: 1,
-      }],
-    }), []
+  /* ── Cálculos (solo cuando llegan los datos de ambos períodos) ── */
+  const totals = useMemo(() => (data.days.data ? totalsFromDays(data.days.data) : undefined), [data.days.data]);
+  const previousTotals = useMemo(
+    () => (data.previousDays.data ? totalsFromDays(data.previousDays.data) : undefined),
+    [data.previousDays.data]
   );
 
-  const fetchReportData = useCallback(async () => {
-    if (!profile || !selectedStoreFilter) return;
-      
-    setIsLoading(true);
-    setError(null);
-    setReportData([]);
+  const productRows = useMemo(
+    () =>
+      data.products.data && data.previousProducts.data
+        ? buildProductRows(data.products.data, data.previousProducts.data, totals?.tickets ?? 0)
+        : [],
+    [data.products.data, data.previousProducts.data, totals?.tickets]
+  );
+  const moves = useMemo(
+    () =>
+      data.products.data && data.previousProducts.data
+        ? productMoves(data.products.data, data.previousProducts.data)
+        : { risers: [], fallers: [] },
+    [data.products.data, data.previousProducts.data]
+  );
+  const categoryRows = useMemo(
+    () =>
+      data.products.data && data.previousProducts.data ? buildCategoryRows(data.products.data, data.previousProducts.data) : [],
+    [data.products.data, data.previousProducts.data]
+  );
+  const storeRows = useMemo(
+    () => (data.stores.data && data.previousStores.data ? buildStoreRows(data.stores.data, data.previousStores.data) : []),
+    [data.stores.data, data.previousStores.data]
+  );
 
-    try {
-      const storeId = selectedStoreFilter;
-      let data;
-      switch (reportSubType) {
-        case 'store':
-          data = await getDailySalesByStore(selectedDate, storeId);
-          break;
-        case 'product':
-          data = await v3_getDailySalesByProduct(selectedDate, storeId);
-          break;
-        case 'payment_method':
-          data = await getDailySalesByPaymentMethod(selectedDate, storeId);
-          break;
-        default:
-          data = [];
-      }
-      setReportData(data);
-    } catch (err: any) {
-      setError(err.message);
-      toast.error(`Error al cargar el reporte: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [reportSubType, selectedDate, selectedStoreFilter, profile]);
+  /* Cada método conserva su color: se ordena por id, no por cuánto vendió */
+  const methodOrder = useMemo(() => paymentMethods.map((method) => method.id).sort((a, b) => a - b), [paymentMethods]);
+  const paymentRows = useMemo(
+    () =>
+      data.payments.data && data.previousPayments.data
+        ? buildPaymentRows(data.payments.data, data.previousPayments.data, methodOrder)
+        : [],
+    [data.payments.data, data.previousPayments.data, methodOrder]
+  );
+  const cashSummary = useMemo(() => (data.cash.data ? summarizeCash(data.cash.data) : undefined), [data.cash.data]);
 
-  useEffect(() => {
-    if (profile && selectedStoreFilter && !hasLoadedInitialData.current) {
-      fetchReportData();
-      hasLoadedInitialData.current = true;
-    }
-  }, [profile, selectedStoreFilter, fetchReportData]);
+  /* Hoy: ayer hasta la misma hora, para una comparación justa */
+  const todaySoFar = useMemo(() => {
+    if (!period.isSingleDay || !period.includesToday || !data.hours.data || !data.previousHours.data) return undefined;
+    const lastHour = Math.max(currentLimaHour(), ...data.hours.data.map((row) => row.hour));
+    const previousSales = data.previousHours.data
+      .filter((row) => row.hour <= lastHour)
+      .reduce((sum, row) => sum + row.total_sales, 0);
+    return { lastHour, previousSales };
+  }, [period.isSingleDay, period.includesToday, data.hours.data, data.previousHours.data]);
+
+  const insights = useMemo(
+    () =>
+      buildInsights({
+        period,
+        totals,
+        previousTotals,
+        days: data.days.data,
+        hours: data.hours.data,
+        products: productRows.length > 0 ? productRows : undefined,
+        moves: data.previousProducts.data && data.previousProducts.data.length > 0 ? moves : undefined,
+        payments: paymentRows.length > 0 ? paymentRows : undefined,
+        stores: allStores && storeRows.length > 0 ? storeRows : undefined,
+        withoutSalesCount: data.withoutSales.data?.length,
+        cash: cashSummary,
+        todaySoFar,
+      }),
+    [
+      period,
+      totals,
+      previousTotals,
+      data.days.data,
+      data.hours.data,
+      productRows,
+      data.previousProducts.data,
+      moves,
+      paymentRows,
+      allStores,
+      storeRows,
+      data.withoutSales.data,
+      cashSummary,
+      todaySoFar,
+    ]
+  );
+
+  const visibleSections = SECTIONS.filter((section) => section.id !== 'tiendas' || allStores);
+
+  const goTo = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1>Reportes de Venta Diaria</h1>
-      </div>
-
-      <div className={styles.controls}>
-        <select
-          className={styles.selectInput}
-          value={reportSubType}
-          onChange={(e) => setReportSubType(e.target.value as ReportSubType)}
-        >
-          <option value="product">Por Producto</option>
-          <option value="store">Por Tienda</option>
-          <option value="payment_method">Por Método de Pago</option>
-        </select>
-
-        {profile?.role === 'admin' && (
-          <select
-            className={styles.selectInput}
-            value={selectedStoreFilter}
-            onChange={(e) => setSelectedStoreFilter(e.target.value)}
-            disabled={stores.length === 0}
+    <div>
+      <PageHeader
+        title="Reportes"
+        subtitle="Cómo van tus ventas, explicado paso a paso."
+        actions={
+          <Button
+            variant="secondary"
+            icon="bx-refresh"
+            loading={fetching}
+            iconOnlyOnMobile
+            onClick={() => queryClient.invalidateQueries({ queryKey: ['reports'] })}
           >
-            {stores.map((st) => (
-              <option key={st.id} value={st.id}>{st.name}</option>
-            ))}
-          </select>
+            Actualizar
+          </Button>
+        }
+      />
+
+      <ReportFilters
+        preset={preset}
+        onPresetChange={setPreset}
+        custom={custom}
+        onCustomChange={setCustom}
+        storeId={storeId}
+        onStoreChange={setStoreId}
+        stores={stores}
+        storesLoading={storesLoading}
+        period={period}
+      />
+
+      {/* Índice: saltar a cada parte del reporte */}
+      <nav className={styles.toc} aria-label="Partes del reporte">
+        <span className={styles.tocLabel}>Ir a:</span>
+        {visibleSections.map((section) => (
+          <button key={section.id} type="button" className={styles.tocLink} onClick={() => goTo(section.id)}>
+            {section.label}
+          </button>
+        ))}
+      </nav>
+
+      <div className={styles.sections}>
+        {period.isSingleDay && period.includesToday && (
+          <Alert tone="info" title="El día de hoy aún no termina">
+            Los números siguen creciendo con cada venta, así que las tarjetas comparan con ayer completo y pueden verse
+            bajas. Para una comparación justa, mira "Lo más importante" (ayer hasta la misma hora) y la tendencia hora
+            por hora.
+          </Alert>
         )}
 
-        <input
-          type="date"
-          className={styles.dateInput}
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-        />
+        <SummarySection period={period} data={data} totals={totals} previousTotals={previousTotals} />
+        <InsightsSection insights={insights} loading={data.days.isPending} />
+        <TrendSection period={period} data={data} />
+        <HoursSection period={period} data={data} />
+        <ProductsSection period={period} data={data} rows={productRows} moves={moves} allStores={allStores} />
 
-        <button onClick={fetchReportData} className={styles.fetchButton} disabled={isLoading}>
-          {isLoading ? 'Cargando...' : 'Generar Reporte'}
-        </button>
-      </div>
+        <div className={styles.grid2}>
+          <CategoriesSection period={period} data={data} rows={categoryRows} />
+          <PaymentsSection period={period} data={data} rows={paymentRows} />
+        </div>
 
-      <div className={styles.reportContent}>
-        {error && <div className={styles.errorState}>{error}</div>}
-        {isLoading && <div className={styles.loadingState}>Generando reporte…</div>}
-
-        {!isLoading && !error && reportData.length > 0 && (
-          <>
-            {reportSubType === 'store' && (
-              <ChartBar
-                data={transformDataForChart(reportData, 'store_name', 'total_sales', 'Ventas por Tienda')}
-                title="Ventas por Tienda"
-              />
-            )}
-            
-            {reportSubType === 'product' && (
-              <ChartBar
-                data={transformDataForChart(reportData, 'product_name', 'total_sales', 'Ventas por Producto')}
-                title="Ventas por Producto"
-              />
-            )}
-
-            {reportSubType === 'payment_method' && (
-              <ChartBar
-                data={transformDataForChart(reportData, 'payment_method_name', 'total_sales', 'Ventas por Método de Pago')}
-                title="Ventas por Método de Pago"
-              />
-            )}
-          </>
-        )}
-
-        {!isLoading && !error && reportData.length === 0 && (
-          <div className={styles.emptyState}>
-            <p>No hay datos para el reporte seleccionado.</p>
-            <p>Ajusta los filtros y haz clic en "Generar Reporte".</p>
-          </div>
-        )}
+        {allStores && <StoresSection period={period} data={data} rows={storeRows} />}
+        <CashSection data={data} allStores={allStores} />
       </div>
     </div>
   );

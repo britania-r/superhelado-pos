@@ -1,0 +1,72 @@
+/* src/components/ui/InfoTip.module.css */
+
+.trigger {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  margin: -3px 0;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-3);
+  font-size: 16px;
+  line-height: 1;
+  cursor: help;
+  transition: color var(--dur-fast) var(--ease-out), background-color var(--dur-fast) var(--ease-out);
+}
+
+/* Zona de toque más grande que el ícono */
+.trigger::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+}
+
+.trigger:hover,
+.active {
+  background-color: var(--brand-blue-soft);
+  color: var(--brand-blue);
+}
+
+.trigger:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.popup {
+  position: fixed;
+  z-index: calc(var(--z-modal) + 5);
+  max-width: min(280px, calc(100vw - 16px));
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background-color: var(--brand-ink);
+  box-shadow: var(--shadow-md);
+  color: #FFFFFF;
+  font-size: var(--fs-sm);
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: left;
+  white-space: normal;
+  animation: tip-in var(--dur-fast) var(--ease-out);
+}
+
+.popup strong {
+  font-weight: 700;
+}
+
+@keyframes tip-in {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .popup {
+    animation: none;
+  }
+}

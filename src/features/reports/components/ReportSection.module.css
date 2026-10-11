@@ -1,0 +1,191 @@
+/* src/features/reports/components/ReportSection.module.css */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-xs);
+  scroll-margin-top: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background-color: var(--brand-blue-soft);
+  color: var(--brand-blue);
+  font-size: 20px;
+}
+
+.heading {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-1);
+}
+
+.question {
+  margin-top: 1px;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.helpButton {
+  flex-shrink: 0;
+}
+
+.helpActive {
+  background-color: var(--brand-blue-soft);
+  color: var(--brand-blue);
+}
+
+/* "¿Cómo leerlo?": fondo crema, como una nota */
+.help {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--brand-cream-deep);
+  border-radius: var(--radius-md);
+  background-color: var(--brand-cream);
+  font-size: var(--fs-sm);
+  line-height: 1.55;
+  color: var(--text-1);
+}
+
+.help ul {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.help strong {
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.body {
+  min-width: 0;
+  transition: opacity var(--dur) var(--ease-out);
+}
+
+/* Datos nuevos en camino: se mantiene lo anterior, atenuado */
+.busy {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* ── Estados ── */
+.skeleton {
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, var(--bg-subtle) 0%, var(--bg-hover) 50%, var(--bg-subtle) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+.error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-md);
+  background-color: var(--danger-soft);
+  color: var(--danger-ink);
+}
+
+.error > i {
+  font-size: 22px;
+}
+
+.errorText {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 180px;
+  font-size: var(--fs-sm);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 28px 12px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-subtle);
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  text-align: center;
+}
+
+.empty i {
+  font-size: 26px;
+  color: var(--text-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .header {
+    gap: 10px;
+  }
+
+  .icon {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+
+  .title {
+    font-size: var(--fs-lg);
+  }
+}

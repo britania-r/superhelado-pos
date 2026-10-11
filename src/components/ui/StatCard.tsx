@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { cx } from '../../lib/cx';
+import { InfoTip } from './InfoTip';
 import styles from './StatCard.module.css';
 
 type StatTone = 'neutral' | 'brand' | 'accent' | 'success' | 'warning' | 'danger';
@@ -16,16 +17,21 @@ interface StatCardProps {
   tone?: StatTone;
   /** Debajo del valor: un dato extra o una etiqueta de estado */
   hint?: ReactNode;
+  /** Explicación del dato: agrega un botón "?" junto a la etiqueta */
+  info?: ReactNode;
   /** Resalta la tarjeta (el número principal del resumen) */
   emphasis?: boolean;
   className?: string;
 }
 
 /** Un número destacado con su etiqueta (totales, resúmenes) */
-export const StatCard = ({ label, value, icon, tone = 'neutral', hint, emphasis = false, className }: StatCardProps) => (
+export const StatCard = ({ label, value, icon, tone = 'neutral', hint, info, emphasis = false, className }: StatCardProps) => (
   <div className={cx(styles.card, emphasis && styles.emphasis, className)}>
     <div className={styles.top}>
-      <span className={styles.label}>{label}</span>
+      <span className={styles.labelWrap}>
+        <span className={styles.label}>{label}</span>
+        {info && <InfoTip label={`Qué significa: ${label}`}>{info}</InfoTip>}
+      </span>
       {icon && (
         <span className={cx(styles.icon, styles[tone])} aria-hidden="true">
           <i className={cx('bx', icon)} />

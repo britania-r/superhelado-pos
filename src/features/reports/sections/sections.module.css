@@ -1,0 +1,344 @@
+/* src/features/reports/sections/sections.module.css
+   Estilos compartidos por las secciones del reporte. */
+
+.muted {
+  font-size: var(--fs-xs);
+  font-weight: 400;
+  color: var(--text-2);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+.subTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.subTitle i {
+  font-size: 18px;
+  color: var(--text-2);
+}
+
+/* ── Resumen: tarjetas que se acomodan solas ── */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.compareNote {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.compareNote strong {
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+/* ── Lo más importante ── */
+.insights {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 8px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.insight {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+  padding: 8px 0;
+}
+
+.insightIcon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  font-size: 17px;
+}
+
+.tone_brand { background-color: var(--brand-blue-soft); color: var(--brand-blue); }
+.tone_success { background-color: var(--success-soft); color: var(--success-ink); }
+.tone_warning { background-color: var(--warning-soft); color: var(--warning-ink); }
+.tone_danger { background-color: var(--danger-soft); color: var(--danger-ink); }
+.tone_neutral { background-color: var(--bg-subtle); color: var(--text-2); }
+
+.insightText {
+  padding-top: 5px;
+  font-size: var(--fs-md);
+  line-height: 1.5;
+  color: var(--text-1);
+}
+
+.insightText strong {
+  font-weight: 700;
+}
+
+.insightSkeleton {
+  height: 132px;
+  border-radius: var(--radius-md);
+  background-color: var(--bg-subtle);
+}
+
+/* ── Horas: mapa de calor + días de la semana ── */
+.hoursLayout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+  align-items: start;
+  gap: 24px;
+}
+
+.weekdays {
+  min-width: 0;
+}
+
+/* ── Productos ── */
+.product {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.productText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.productName {
+  font-weight: 600;
+  color: var(--text-1);
+  overflow-wrap: anywhere;
+}
+
+.productMeta {
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+}
+
+.inlineStack {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px 8px;
+}
+
+.dateStack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+
+.cellStack {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+/* Barrita junto al porcentaje: compara con el más vendido */
+.shareCell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.shareBar {
+  display: block;
+  flex-shrink: 0;
+  width: 56px;
+  height: 4px;
+  border-radius: 0 2px 2px 0;
+  background-color: var(--bg-subtle);
+}
+
+.shareBar span {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: 0 2px 2px 0;
+  background-color: var(--chart-1);
+}
+
+.columns2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.detailStack {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Pagos ── */
+.paymentList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.paymentItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 10px 0;
+  border-top: 1px solid var(--border-1);
+}
+
+.paymentItem:first-child {
+  border-top: none;
+}
+
+.paymentSwatch {
+  flex-shrink: 0;
+  width: 10px;
+  height: 28px;
+  border-radius: 3px;
+}
+
+.paymentIcon {
+  flex-shrink: 0;
+  font-size: 20px;
+  color: var(--text-2);
+}
+
+.paymentName {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.paymentName strong {
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.paymentValues {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.paymentValues strong {
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.paymentShare {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+/* ── Caja ── */
+.cashStats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.warnText {
+  font-weight: 700;
+  color: var(--warning-ink);
+}
+
+.difference {
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--text-1);
+}
+
+/* ── Tablet ── */
+@media (max-width: 1100px) {
+  .hoursLayout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .cashStats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ── Celular ── */
+@media (max-width: 640px) {
+  .kpis {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .insights {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  .insight {
+    padding: 5px 0;
+  }
+
+  .insightText {
+    font-size: var(--fs-sm);
+  }
+
+  .columns2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cashStats {
+    gap: 8px;
+  }
+
+  .paymentItem {
+    flex-wrap: wrap;
+  }
+
+  .paymentValues {
+    margin-left: auto;
+  }
+}
+
+/* Tablas anchas en tablet: se desplazan dentro de la tarjeta, no la página */
+.tableScroll {
+  min-width: 0;
+  overflow-x: auto;
+}

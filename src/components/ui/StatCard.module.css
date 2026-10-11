@@ -25,6 +25,13 @@
   gap: var(--space-sm);
 }
 
+.labelWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
 .label {
   font-size: var(--fs-sm);
   font-weight: 600;

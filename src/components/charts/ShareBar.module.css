@@ -1,0 +1,43 @@
+/* src/components/charts/ShareBar.module.css */
+
+.frame {
+  position: relative;
+  min-width: 0;
+}
+
+/* 2px de separación (color de la superficie) entre tramos; puntas redondeadas */
+.bar {
+  display: flex;
+  gap: 2px;
+  height: 24px;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.segment {
+  display: grid;
+  place-items: center;
+  flex-basis: 0;
+  min-width: 2px;
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.segment[data-dim] {
+  opacity: 0.45;
+}
+
+.inkLight,
+.inkDark {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.inkLight {
+  color: #FFFFFF;
+}
+
+.inkDark {
+  color: var(--brand-ink);
+}

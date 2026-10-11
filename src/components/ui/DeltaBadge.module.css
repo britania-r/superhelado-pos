@@ -1,0 +1,47 @@
+/* src/components/ui/DeltaBadge.module.css */
+
+.wrap {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  min-width: 0;
+}
+
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 7px 1px 4px;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.delta i {
+  font-size: 14px;
+}
+
+.good {
+  background-color: var(--success-soft);
+  color: var(--success-ink);
+}
+
+.bad {
+  background-color: var(--danger-soft);
+  color: var(--danger-ink);
+}
+
+.neutral {
+  background-color: var(--bg-subtle);
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+.label {
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+}

@@ -1,0 +1,76 @@
+/* src/features/reports/components/ReportFilters.module.css */
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: var(--space-md);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.presets {
+  flex: 1;
+  min-width: 0;
+}
+
+.store {
+  flex: 0 0 240px;
+}
+
+.custom {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 220px));
+  gap: 12px;
+}
+
+.caption {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.caption i {
+  margin-top: 1px;
+  font-size: 16px;
+}
+
+.caption strong {
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+/* Tablet: la tienda baja debajo de los atajos */
+@media (max-width: 1100px) {
+  .row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .store {
+    flex-basis: auto;
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 640px) {
+  .store {
+    max-width: none;
+  }
+
+  .custom {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .compare {
+    display: block;
+  }
+}

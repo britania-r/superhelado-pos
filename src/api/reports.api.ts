@@ -15,6 +15,13 @@ import type {
   V2ReportSalesByPaymentMethodResult,
   V2DailyCashSummaryResult,
   V3DailyCashSummaryResult,
+  RptSalesByDay,
+  RptSalesByHour,
+  RptSalesByProduct,
+  RptSalesByStore,
+  RptSalesByPaymentMethod,
+  RptProductWithoutSales,
+  RptCashShift,
 } from '../types';
 
 const toNull = <T>(v: T | undefined | null) => (v === undefined ? null : v);
@@ -167,6 +174,83 @@ export const v3_getDailyCashSummary = (date: string, storeId: string | null) =>
     p_store_id: storeId,
   });
   
+/*────────── Reportes por rango (funciones rpt_*) ──────────
+  Todas reciben el mismo rango: días de Lima 'YYYY-MM-DD' (inclusive)
+  y la tienda (null = todas). Solo las puede usar un admin. */
+
+export interface ReportRange {
+  start: string;
+  end: string;
+  storeId: string | null;
+}
+
+const rangeParams = ({ start, end, storeId }: ReportRange) => ({
+  p_start_date: start,
+  p_end_date: end,
+  p_store_id: storeId,
+});
+
+/* Postgres "numeric" puede llegar como texto: se pasa a número */
+const num = (value: unknown) => Number(value ?? 0);
+const numOrNull = (value: unknown) => (value === null || value === undefined ? null : Number(value));
+
+export const getReportSalesByDay = async (range: ReportRange) =>
+  (await rpc<RptSalesByDay>('rpt_sales_by_day', rangeParams(range))).map((row) => ({
+    ...row,
+    total_sales: num(row.total_sales),
+    tickets: num(row.tickets),
+    units: num(row.units),
+  }));
+
+export const getReportSalesByHour = async (range: ReportRange) =>
+  (await rpc<RptSalesByHour>('rpt_sales_by_hour', rangeParams(range))).map((row) => ({
+    ...row,
+    total_sales: num(row.total_sales),
+    tickets: num(row.tickets),
+  }));
+
+export const getReportSalesByProduct = async (range: ReportRange) =>
+  (await rpc<RptSalesByProduct>('rpt_sales_by_product', rangeParams(range))).map((row) => ({
+    ...row,
+    total_sales: num(row.total_sales),
+    tickets: num(row.tickets),
+    units: num(row.units),
+  }));
+
+export const getReportSalesByStore = async (range: ReportRange) =>
+  (await rpc<RptSalesByStore>('rpt_sales_by_store', rangeParams(range))).map((row) => ({
+    ...row,
+    total_sales: num(row.total_sales),
+    tickets: num(row.tickets),
+    units: num(row.units),
+  }));
+
+export const getReportSalesByPaymentMethod = async (range: ReportRange) =>
+  (await rpc<RptSalesByPaymentMethod>('rpt_sales_by_payment_method', rangeParams(range))).map((row) => ({
+    ...row,
+    total_sales: num(row.total_sales),
+    tickets: num(row.tickets),
+  }));
+
+export const getReportProductsWithoutSales = async (range: ReportRange) =>
+  (await rpc<RptProductWithoutSales>('rpt_products_without_sales', rangeParams(range))).map((row) => ({
+    ...row,
+    min_price: num(row.min_price),
+    max_price: num(row.max_price),
+    store_count: num(row.store_count),
+  }));
+
+export const getReportCashShifts = async (range: ReportRange) =>
+  (await rpc<RptCashShift>('rpt_cash_shifts', rangeParams(range))).map((row) => ({
+    ...row,
+    opening_balance: num(row.opening_balance),
+    calculated_sales: numOrNull(row.calculated_sales),
+    expected_balance: numOrNull(row.expected_balance),
+    counted_balance: numOrNull(row.counted_balance),
+    balance_difference: numOrNull(row.balance_difference),
+    day_sales: num(row.day_sales),
+  }));
+
 /*────────── Helpers genéricos ──────────*/
 async function rpc<T>(fn: string, params: Record<string, any>) {
   const { data, error } = await supabase.rpc(fn, params);

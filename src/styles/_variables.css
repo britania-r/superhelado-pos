@@ -100,6 +100,31 @@
   --z-modal: 1000;
   --z-toast: 1100;
 
+  /* ── Gráficos ──────────────────────────────────────────────────────
+     Categóricos: identidad (un color por método de pago, etc.), siempre
+     en este orden. Validados para daltonismo sobre fondo blanco.
+     Los colores claros (3, 4, 5) van siempre con etiqueta o tabla. */
+  --chart-1: #3B4CA0;
+  --chart-2: #EB6834;
+  --chart-3: #1BAF7A;
+  --chart-4: #EDA100;
+  --chart-5: #E87BA4;
+  --chart-6: #008300;
+  --chart-7: #6250D6;
+  --chart-8: #E34948;
+  --chart-muted: #8A8FAE;              /* Período anterior y "Otros" */
+  --chart-grid: #ECEAE1;               /* Líneas guía */
+  --chart-axis: #D6D2C2;               /* Línea base */
+  --chart-wash: rgba(59, 76, 160, 0.1); /* Relleno bajo la línea */
+
+  /* Secuencial (cantidad): un solo tono, de claro (poco) a oscuro (mucho) */
+  --seq-1: #E0E7FD;
+  --seq-2: #BCC9F3;
+  --seq-3: #96A8E4;
+  --seq-4: #6F84D2;
+  --seq-5: #4E61B6;
+  --seq-6: #324190;
+
   /* ════════════════════════════════════════════════════════════════
      Alias del diseño anterior.
      Las pantallas que aún no se rediseñan siguen usando estos nombres,

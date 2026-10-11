@@ -236,3 +236,76 @@ export type V3DailyCashSummaryResult = {
   total_counted: number;
   total_difference: number;
 };
+/* ─── Reportes (funciones rpt_* de supabase/sql/reportes_rpcs.sql) ─── */
+
+/** Una fila por día del rango (incluye días sin ventas en 0). day = 'YYYY-MM-DD' */
+export type RptSalesByDay = {
+  day: string;
+  total_sales: number;
+  tickets: number;
+  units: number;
+};
+
+/** weekday: 1 = lunes … 7 = domingo; hour: 0–23 (hora de Lima) */
+export type RptSalesByHour = {
+  weekday: number;
+  hour: number;
+  total_sales: number;
+  tickets: number;
+};
+
+/** tickets = en cuántas ventas apareció el producto */
+export type RptSalesByProduct = {
+  product_id: string;
+  product_name: string;
+  image_url: string | null;
+  category_id: number | null;
+  category_name: string;
+  units: number;
+  total_sales: number;
+  tickets: number;
+};
+
+export type RptSalesByStore = {
+  store_id: string;
+  store_name: string;
+  total_sales: number;
+  tickets: number;
+  units: number;
+};
+
+export type RptSalesByPaymentMethod = {
+  payment_method_id: number | null;
+  payment_method_name: string;
+  total_sales: number;
+  tickets: number;
+};
+
+/** last_sold_at = última venta antes del período (null = nunca se vendió) */
+export type RptProductWithoutSales = {
+  product_id: string;
+  product_name: string;
+  image_url: string | null;
+  category_name: string;
+  min_price: number;
+  max_price: number;
+  store_count: number;
+  last_sold_at: string | null;
+};
+
+/** Caja abierta en el período. Los campos de cierre son null si sigue abierta. */
+export type RptCashShift = {
+  shift_id: number;
+  store_id: string;
+  store_name: string;
+  user_name: string | null;
+  opened_at: string;
+  closed_at: string | null;
+  opening_balance: number;
+  calculated_sales: number | null;
+  expected_balance: number | null;
+  counted_balance: number | null;
+  balance_difference: number | null;
+  /** Ventas reales de esa tienda ese día */
+  day_sales: number;
+};

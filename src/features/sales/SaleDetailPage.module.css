@@ -1,118 +1,182 @@
 /* src/features/sales/SaleDetailPage.module.css */
 
-.container {
-  padding: var(--space-lg);
+.back {
+  margin: -2px 0 var(--space-sm) -8px;
 }
 
-.backButton {
-  background: none;
-  border: none;
-  color: var(--color-primary);
-  cursor: pointer;
+.loading {
+  display: grid;
+  place-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-2xl) 0;
+  color: var(--text-2);
+}
+
+/* ── Productos | datos ── */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  align-items: start;
+  gap: var(--space-md);
+}
+
+.card {
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-xs);
+  overflow: hidden;
+}
+
+.cardHeader {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
-  font-weight: 600;
-  font-size: 1rem;
+  padding: 14px var(--space-md);
+  border-bottom: 1px solid var(--border-1);
 }
 
-.backButton:hover {
-  text-decoration: underline;
+.cardTitle {
+  font-size: var(--fs-lg);
 }
 
-.backButton i {
-  font-size: 1.2rem;
+.cardMeta {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
 }
 
-.header h1 {
-  margin-bottom: var(--space-xl);
+/* ── Ítems ── */
+.items {
+  list-style: none;
 }
 
-.saleSummary {
-  background-color: var(--color-surface);
-  padding: var(--space-lg);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-sm);
-  margin-bottom: var(--space-xl);
+.item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px var(--space-md);
+  border-bottom: 1px solid var(--border-1);
 }
 
-.saleSummary p {
-  margin-bottom: var(--space-sm);
-  font-size: 1.1rem;
-}
-
-.saleSummary strong {
-  color: var(--color-text-primary);
-  margin-right: var(--space-xs);
-}
-
-.itemsTable {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: var(--color-surface);
-  box-shadow: var(--shadow-sm);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  margin-top: var(--space-lg);
-}
-
-.itemsTable th, .itemsTable td {
-  padding: var(--space-md);
-  text-align: left;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.itemsTable th {
-  color: var(--color-text-secondary);
-  font-weight: 600;
-}
-
-.itemsTable tr:last-child td {
+.item:last-child {
   border-bottom: none;
 }
 
-.itemImage {
-  width: 40px;
-  height: 40px;
-  object-fit: fill;
-  border-radius: var(--border-radius);
-}
-
-.itemImagePlaceholder {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--border-radius);
-  background-color: var(--color-bg);
-  border: 1px dashed var(--color-border);
+.itemInfo {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-text-secondary);
-  font-size: 1.2rem;
+  flex-direction: column;
+  min-width: 0;
 }
 
-.loadingState, .errorState, .emptyState {
-  text-align: center;
-  padding: var(--space-xl);
-  background-color: var(--color-surface);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-sm);
-  color: var(--color-text-secondary);
-  margin-top: var(--space-lg);
-}
-
-.errorState {
-  color: var(--color-error);
+.itemName {
   font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.itemMeta {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.itemTotal {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .noItems {
-  background-color: var(--color-surface);
-  padding: var(--space-md);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-sm);
-  color: var(--color-text-secondary);
-  font-style: italic;
+  padding: var(--space-xl) var(--space-md);
+  color: var(--text-2);
   text-align: center;
+}
+
+.totalRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: 14px var(--space-md);
+  border-top: 1px solid var(--border-1);
+  background-color: var(--bg-subtle);
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.totalAmount {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--brand-ink);
+}
+
+/* ── Datos ── */
+.info,
+.payment {
+  padding: 6px var(--space-md);
+}
+
+.payment {
+  border-top: 1px dashed var(--border-2);
+  background-color: #FDFCF7;
+}
+
+.infoRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: 8px 0;
+  font-size: var(--fs-sm);
+}
+
+.infoRow dt {
+  color: var(--text-2);
+}
+
+.infoRow dd {
+  min-width: 0;
+  font-weight: 600;
+  color: var(--text-1);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.money {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Tablet y celular: una columna (datos primero) ── */
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .layout > :last-child {
+    order: -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .back {
+    margin-left: -4px;
+  }
+
+  .layout {
+    gap: var(--space-sm);
+  }
+
+  .cardHeader,
+  .item,
+  .totalRow {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .info,
+  .payment {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
 }

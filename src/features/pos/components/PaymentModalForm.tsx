@@ -8,6 +8,7 @@ import { useUserStore } from '../../../store/userStore';
 import { useCartStore } from '../../../store/cartStore';
 import { formatCurrency } from '../../../lib/formatters';
 import { cx } from '../../../lib/cx';
+import { getPaymentMethodIcon } from '../../../lib/paymentMethods';
 import { recordSale, SaleError } from '../../../api/sales.api';
 import type { CartItem } from '../../../types';
 import { Field } from '../../../components/ui/Field';
@@ -105,15 +106,6 @@ const printSaleTicket = (saleDetails: {
   printWindow.document.close();
   printWindow.focus();
   setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
-};
-
-/* Ícono según el nombre del método (solo visual) */
-const methodIcon = (name: string) => {
-  const text = name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-  if (/efectivo|cash|contado/.test(text)) return 'bx-money';
-  if (/tarjeta|visa|master|credito|debito|pos/.test(text)) return 'bx-credit-card';
-  if (/yape|plin|transfer|qr|billetera|wallet/.test(text)) return 'bx-mobile-alt';
-  return 'bx-wallet';
 };
 
 /* Billetes próximos al total (S/ 15.50 → 20, 50, 100) para no escribir el monto */
@@ -317,7 +309,7 @@ export const PaymentModalForm = ({ onClose, onSaleSuccess, activeStoreId }: Paym
                 defaultChecked={method.id === paymentMethods[0]?.id}
               />
               <span className={styles.methodTile}>
-                <i className={cx('bx', methodIcon(method.name), styles.methodIcon)} aria-hidden="true" />
+                <i className={cx('bx', getPaymentMethodIcon(method.name), styles.methodIcon)} aria-hidden="true" />
                 <span className={styles.methodName}>{method.name}</span>
                 <i className={cx('bx bxs-check-circle', styles.methodCheck)} aria-hidden="true" />
               </span>

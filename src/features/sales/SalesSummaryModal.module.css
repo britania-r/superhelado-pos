@@ -1,174 +1,21 @@
 /* src/features/sales/SalesSummaryModal.module.css */
+/* Lo usan SalesSummaryModal y ExportSalesModal */
 
-.backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.modal {
-  background-color: var(--color-surface);
-  padding: var(--space-xl);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-md);
-  position: relative;
-  width: 90%;
-  max-width: 450px;
+.form {
   display: flex;
   flex-direction: column;
   gap: var(--space-md);
 }
 
-.modalTitle {
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: var(--space-md);
-  font-size: 1.5rem;
-  color: var(--color-text-primary);
-}
-
-.closeButton {
-  position: absolute;
-  top: var(--space-md);
-  right: var(--space-md);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 1.5rem;
-  color: var(--color-text-secondary);
-  transition: color 0.2s;
-}
-.closeButton:hover {
-  color: var(--color-error);
-}
-
-.formGroup {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.formGroup label {
-  font-weight: 500;
-  color: var(--color-text-secondary);
-}
-
-.input, .selectInput {
-  padding: 0.6rem 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  font-size: 0.9rem;
-  background-color: var(--color-bg);
-  color: var(--color-text-primary);
-}
-
-.btnRow {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-md);
-  margin-top: var(--space-lg);
-}
-
-.submitButton, .cancelButton {
-  padding: 0.75rem 1.5rem;
-  border-radius: var(--border-radius);
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: background-color 0.2s, color 0.2s;
-}
-
-.submitButton {
-  background-color: var(--color-primary);
-  color: var(--color-text-on-primary);
-}
-.submitButton:hover {
-  background-color: var(--color-primary-dark);
-}
-.submitButton:disabled {
-  background-color: var(--color-primary-light);
-  cursor: not-allowed;
-}
-
-.cancelButton {
-  background-color: var(--color-bg);
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
-}
-.cancelButton:hover {
-  background-color: var(--color-border);
-}
-
-/* Estilos de estado */
-.loadingMessage {
-  text-align: center;
-  padding: var(--space-lg);
-  color: var(--color-text-secondary);
-}
-.errorMessage {
-  color: var(--color-error);
-  text-align: center;
-  padding: var(--space-lg);
-}
-
-/* --- AÑADIDO: Estilos para el TICKET (ahora inyectados directamente) --- */
-/* Estos estilos son los que se inyectarán en la ventana de impresión */
-.ticket {
-  width: 80mm; 
-  font-family: 'Roboto Mono', monospace; /* Fuente de consola */
-  font-size: 10px; 
-  line-height: 1.4;
-  color: black; 
-  padding: 5mm;
-  box-sizing: border-box; 
-  background-color: white; 
-}
-
-.ticket .center {
-  text-align: center;
-  margin: 1mm 0;
-}
-
-.ticket .ticketTitle {
-  font-size: 14px;
-  font-weight: bold;
-  margin-bottom: 3mm;
-}
-
-.ticket .separator {
-  text-align: center;
-  margin: 2mm 0;
-}
-
-.ticket .itemRowHeader, .ticket .itemRow {
+/* Desde · Hasta */
+.dates {
   display: grid;
-  grid-template-columns: 3fr 1fr 1.5fr; /* Producto, Cantidad, Total */
-  gap: 2mm;
-  margin-bottom: 1mm;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
 }
 
-.ticket .itemRowHeader {
-  font-weight: bold;
-  border-bottom: 1px dashed black;
-  padding-bottom: 1mm;
-  margin-bottom: 2mm;
-}
-
-.ticket .colProd { text-align: left; }
-.ticket .colQty { text-align: center; }
-.ticket .colSales { text-align: right; }
-
-.ticket .totalRow {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  font-weight: bold;
-  margin-top: 2mm;
+@media (max-width: 640px) {
+  .dates {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

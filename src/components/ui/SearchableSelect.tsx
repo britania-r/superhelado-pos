@@ -59,7 +59,7 @@ interface SearchableSelectProps<V extends string> {
 
 /* "Tienda Panamá" se encuentra escribiendo "panama" */
 const normalize = (text: string) =>
-  text.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+  text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
 
 const filterOptions = <V extends string>(options: SelectOption<V>[], query: string) => {
   const search = normalize(query);

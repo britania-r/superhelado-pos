@@ -1,14 +1,22 @@
-// FILE: src/features/sales/SalesSummaryModal.tsx
-// DESC: Genera un resumen diario de ventas con desglose por método de pago.
+// src/features/sales/SalesSummaryModal.tsx
+// Genera un resumen diario de ventas con desglose por método de pago y lo imprime.
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { v2_getDailySalesByProduct, v2_getDailySalesByPaymentMethod } from '../../api/reports.api';
 import type { V2ReportSalesByProductResult, V2ReportSalesByPaymentMethodResult, Store } from '../../types';
 import toast from 'react-hot-toast';
-import styles from './SalesSummaryModal.module.css';
 import { formatCurrency } from '../../lib/formatters';
+import { getErrorMessage } from '../../lib/errors';
+import { Modal } from '../../components/ui/Modal';
+import { Field } from '../../components/ui/Field';
+import { DatePicker } from '../../components/ui/DatePicker';
+import { SearchableSelect, type SelectOption } from '../../components/ui/SearchableSelect';
+import { Button } from '../../components/ui/Button';
+import { FormActions } from '../../components/ui/FormActions';
+import { Alert } from '../../components/ui/Alert';
+import styles from './SalesSummaryModal.module.css';
 
-// --- NUEVO: Helper para obtener la fecha de hoy en formato YYYY-MM-DD ---
+// Fecha de hoy en formato YYYY-MM-DD
 const getTodayDateString = () => {
   const today = new Date();
   const year = today.getFullYear();
@@ -18,7 +26,7 @@ const getTodayDateString = () => {
 };
 
 interface Props {
-  stores: Store[]; 
+  stores: Store[];
   defaultStoreId: string | null;
   role: 'admin' | 'vendedor';
   onClose: () => void;
@@ -30,7 +38,6 @@ export const SalesSummaryModal = ({
   role,
   onClose,
 }: Props) => {
-  // --- CAMBIO: Usar el nuevo helper para la fecha inicial ---
   const [date, setDate] = useState(getTodayDateString());
   const [storeId, setStoreId] = useState<string | null>(
     role === 'vendedor' ? defaultStoreId : stores[0]?.id ?? null
@@ -45,6 +52,11 @@ export const SalesSummaryModal = ({
     items: V2ReportSalesByProductResult[];
     paymentSummary: V2ReportSalesByPaymentMethodResult[];
   } | null>(null);
+
+  const storeOptions = useMemo<SelectOption[]>(
+    () => stores.map((store) => ({ value: store.id, label: store.name, icon: 'bx-store-alt' })),
+    [stores]
+  );
 
   useEffect(() => {
     if (!receiptDetails) return;
@@ -81,7 +93,7 @@ export const SalesSummaryModal = ({
               <span class="col-total">${formatCurrency(item.total_sales)}</span>
             </div>`
           ).join('')}
-        
+
         <p class="separator">--------------------------------</p>
         ${receiptDetails.paymentSummary
           .map(payment => `
@@ -90,7 +102,7 @@ export const SalesSummaryModal = ({
               <span>${formatCurrency(payment.total_sales)}</span>
             </div>`
           ).join('')}
-        
+
         <p class="separator">--------------------------------</p>
         <div class="total-row">
           <span>TOTAL VENTAS:</span>
@@ -176,66 +188,57 @@ export const SalesSummaryModal = ({
         paymentSummary: paymentData,
       });
 
-    } catch (e: any) {
-      setError(e.message);
-      toast.error(`Error al generar reporte: ${e.message}`);
+    } catch (e) {
+      const message = getErrorMessage(e);
+      setError(message);
+      toast.error(`Error al generar reporte: ${message}`);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className={styles.backdrop}>
-      <div className={styles.modal}>
-        <h3 className={styles.modalTitle}>Resumen Diario</h3>
-        <button onClick={onClose} className={styles.closeButton}>
-          <i className="bx bx-x"></i>
-        </button>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="summary-date">Fecha:</label>
-          <input
-            id="summary-date"
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className={styles.input}
-          />
-        </div>
+    <Modal
+      isOpen
+      onClose={onClose}
+      title="Resumen diario"
+      description="Imprime las ventas del día por producto y por método de pago."
+      size="sm"
+    >
+      <div className={styles.form}>
+        <Field label="Fecha" htmlFor="summary-date">
+          <DatePicker value={date} onChange={setDate} label="Fecha del resumen" />
+        </Field>
 
         {role === 'admin' && (
-          <div className={styles.formGroup}>
-            <label htmlFor="summary-store">Tienda:</label>
-            <select
-              id="summary-store"
+          <Field label="Tienda" htmlFor="summary-store">
+            <SearchableSelect
+              options={storeOptions}
               value={storeId ?? ''}
-              onChange={(e) => setStoreId(e.target.value)}
-              className={styles.selectInput}
-            >
-              {stores.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.name}
-                </option>
-              ))}
-            </select>
-          </div>
+              onChange={(value) => setStoreId(value)}
+              label="Tienda"
+              placeholder="Selecciona una tienda"
+              searchPlaceholder="Buscar tienda…"
+              emptyMessage="No hay tiendas con ese nombre"
+            />
+          </Field>
         )}
 
-        <div className={styles.btnRow}>
-          <button
-            onClick={handleGenerate}
-            disabled={loading}
-            className={styles.submitButton}
-          >
-            {loading ? 'Generando...' : 'Generar e Imprimir'}
-          </button>
-          <button onClick={onClose} className={styles.cancelButton}>
-            Cerrar
-          </button>
-        </div>
+        {error && (
+          <Alert tone="danger" title="No se pudo generar el resumen">
+            {error}
+          </Alert>
+        )}
 
-        {error && <p className={styles.errorMessage}>{error}</p>}
+        <FormActions>
+          <Button variant="secondary" onClick={onClose}>
+            Cerrar
+          </Button>
+          <Button icon="bx-printer" loading={loading} onClick={handleGenerate}>
+            Generar e imprimir
+          </Button>
+        </FormActions>
       </div>
-    </div>
+    </Modal>
   );
 };

@@ -29,7 +29,7 @@
 .image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill; /* regla del proyecto: imagen completa, nunca recortada */
 }
 
 .placeholder {

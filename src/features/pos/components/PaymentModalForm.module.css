@@ -3,175 +3,336 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-md);
 }
 
-.formGroup {
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-xl) 0;
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+/* ── Total a cobrar ── */
+.totalCard {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.formGroup label {
-  font-weight: 500;
-  color: var(--color-text-secondary);
-}
-
-.input {
-  padding: 0.6rem 0.8rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  font-size: 0.9rem;
-}
-
-.infoField {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  font-size: 1.1rem;
+  gap: 2px;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--brand-blue) 0%, #5062B8 100%);
+  color: #FFFFFF;
+  text-align: center;
+}
+
+.totalLabel {
+  font-size: var(--fs-xs);
   font-weight: 600;
-  padding: var(--space-sm) 0;
-  border-bottom: 1px dashed var(--color-border);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.85;
 }
 
-.totalAmount {
-  color: var(--color-primary);
-  font-size: 1.3rem;
-  font-weight: 700;
+.totalValue {
+  font-family: var(--font-display);
+  font-size: 2.25rem;
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
 }
 
-.changeAmount {
-  color: var(--color-success);
-  font-size: 1.2rem;
-  font-weight: 700;
+.totalMeta {
+  font-size: var(--fs-xs);
+  opacity: 0.85;
 }
 
-.errorText {
-  color: var(--color-error);
-  font-size: 0.8rem;
+/* ── Método de pago: tarjetas ── */
+.fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
 }
 
-/* Estilos para los botones de método de pago */
-.paymentMethodButtons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
+.legend {
+  margin-bottom: 6px;
+  padding: 0;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-1);
 }
 
-.paymentMethodLabel {
+.methods {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+
+.method {
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.6rem 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
+  display: block;
   cursor: pointer;
-  background-color: var(--color-bg);
-  transition: background-color 0.2s, border-color 0.2s;
-  flex-grow: 1; 
-  min-width: 100px; 
 }
 
-.paymentMethodLabel input[type="radio"] {
+/* El radio real cubre la tarjeta: se puede tocar y usar con teclado */
+.methodInput {
   position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
   opacity: 0;
   cursor: pointer;
-  height: 0;
-  width: 0;
 }
 
-.paymentMethodName {
-  font-weight: 500;
-  color: var(--color-text-primary);
-  text-align: center;
-  width: 100%; 
-  height: 100%; 
-  display: flex; 
-  align-items: center;
-  justify-content: center;
-}
-
-/* --- MODIFICADO: Estilo cuando el radio button está seleccionado --- */
-.paymentMethodLabel input[type="radio"]:checked + .paymentMethodName {
-  background-color: var(--color-primary); 
-  color: var(--color-text-on-primary); 
-  border-color: var(--color-primary); 
-  border-radius: var(--border-radius);
-  /* Asegura que el fondo rellene toda la etiqueta */
-  padding: inherit;
-  margin: calc(-1 * var(--space-sm)) calc(-1 * var(--space-sm)); 
-  width: calc(100% + var(--space-sm) * 2); 
-  height: calc(100% + var(--space-sm) * 2);
-}
-
-.paymentMethodLabel:hover:not(:has(input[type="radio"]:checked)) {
-  background-color: var(--color-primary-light);
-  border-color: var(--color-primary);
-}
-.paymentMethodLabel input[type="radio"]:checked + .paymentMethodName:hover {
-    background-color: var(--color-primary-dark);
-}
-
-
-/* Estilos para las opciones de imprimir */
-.printOptions {
+.methodTile {
+  position: relative;
   display: flex;
-  gap: var(--space-lg); 
-  width: 100%; 
-}
-
-.printOptionLabel { 
-  font-size: 1.1rem; 
-  padding: 0.6rem 1rem; 
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  background-color: var(--color-bg);
-  cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
-  display: flex; 
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-sm); 
-  flex-grow: 1; 
-  justify-content: center; 
+  gap: 4px;
+  padding: 12px 8px 10px;
+  border: 1.5px solid var(--border-2);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
+  color: var(--text-2);
+  text-align: center;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
 }
 
-.printOptionLabel input[type="radio"] {
-    margin-right: 0; 
-    width: auto; 
-    height: auto; 
-    opacity: 1; 
-    position: static; 
+.methodIcon {
+  font-size: 24px;
 }
 
-.printOptionLabel input[type="radio"]:checked + span {
-    color: var(--color-primary); 
-    font-weight: 600;
-}
-
-.printOptionLabel:hover {
-    background-color: var(--color-primary-light);
-    border-color: var(--color-primary);
-}
-.printOptionLabel input[type="radio"]:checked + span:hover {
-    background-color: var(--color-primary-dark);
-    color: var(--color-text-on-primary);
-}
-
-.submitButton {
-  align-self: flex-end;
-  padding: 0.75rem 1.5rem;
-  background-color: var(--color-primary);
-  color: var(--color-text-on-primary);
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
+.methodName {
+  font-size: var(--fs-sm);
   font-weight: 600;
-  font-size: 1.1rem;
-  transition: background-color 0.2s;
+  line-height: 1.25;
+  color: var(--text-1);
+  overflow-wrap: anywhere;
 }
 
-.submitButton:disabled {
-  background-color: var(--color-primary-light);
-  cursor: not-allowed;
+.methodCheck {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 18px;
+  color: var(--brand-blue);
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur) var(--ease-out);
+}
+
+.method:hover .methodTile {
+  border-color: var(--brand-blue);
+}
+
+.methodInput:checked + .methodTile {
+  border-color: var(--brand-blue);
+  background-color: var(--brand-blue-50);
+  color: var(--brand-blue);
+  box-shadow: 0 0 0 1px var(--brand-blue);
+}
+
+.methodInput:checked + .methodTile .methodCheck {
+  opacity: 1;
+  transform: none;
+}
+
+.methodInput:focus-visible + .methodTile {
+  box-shadow: 0 0 0 1px var(--brand-blue), var(--focus-ring);
+}
+
+/* ── Paga con · Cambio ── */
+.cashRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 170px;
+  align-items: start;
+  gap: 12px;
+}
+
+.paidField {
+  min-width: 0;
+}
+
+/* Misma estructura que <Field>: etiqueta arriba, valor del alto del campo */
+.changeField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.changeLabel {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.change {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: var(--control-h-lg);
+  padding: 0 14px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-subtle);
+  color: var(--text-2);
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  transition: background-color var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
+}
+
+.changePositive {
+  border-color: rgba(47, 143, 95, 0.3);
+  background-color: var(--success-soft);
+  color: var(--success-ink);
+}
+
+.changeMissing {
+  border-color: rgba(199, 122, 18, 0.3);
+  background-color: var(--warning-soft);
+  color: var(--warning-ink);
+}
+
+/* Montos rápidos */
+.quickAmounts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: -6px;
+}
+
+.quickButton {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-pill);
+  background-color: var(--bg-surface);
+  color: var(--text-1);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.quickButton:hover {
+  border-color: var(--brand-blue);
+  background-color: var(--brand-blue-50);
+  color: var(--brand-blue);
+}
+
+.quickButton:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* ── Imprimir ticket: No · Sí ── */
+.printRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: 8px 8px 8px 12px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-subtle);
+}
+
+.printLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+}
+
+.printLabel i {
+  font-size: 18px;
+  color: var(--text-2);
+}
+
+.toggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
+}
+
+.toggleOption {
+  position: relative;
+  cursor: pointer;
+}
+
+.toggleInput {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.toggleOption span {
+  display: block;
+  min-width: 52px;
+  padding: 5px 12px;
+  border-radius: 7px;
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  text-align: center;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.toggleInput:checked + span {
+  background-color: var(--brand-blue);
+  color: #FFFFFF;
+}
+
+.toggleInput:focus-visible + span {
+  box-shadow: var(--focus-ring);
+}
+
+/* ── Celular ── */
+@media (max-width: 640px) {
+  .totalValue {
+    font-size: 2rem;
+  }
+
+  .methods {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .cashRow {
+    grid-template-columns: minmax(0, 1fr) 128px;
+    gap: 8px;
+  }
+
+  .change {
+    padding: 0 10px;
+    font-size: var(--fs-lg);
+  }
+
+  .quickButton {
+    height: 36px;
+    font-size: var(--fs-md);
+  }
 }

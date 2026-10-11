@@ -1,0 +1,57 @@
+/* src/components/ui/ChipGroup.module.css */
+
+.group {
+  display: flex;
+  gap: 6px;
+  padding: 2px; /* deja ver el anillo de foco */
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.group::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  flex-shrink: 0;
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--border-2);
+  border-radius: var(--radius-pill);
+  background-color: var(--bg-surface);
+  color: var(--text-2);
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.chip:hover:not(.selected) {
+  border-color: var(--brand-blue);
+  color: var(--brand-blue);
+}
+
+.chip:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.selected {
+  border-color: var(--brand-blue);
+  background-color: var(--brand-blue);
+  color: #FFFFFF;
+}
+
+@media (max-width: 640px) {
+  .chip {
+    height: 36px;
+    font-size: var(--fs-md);
+  }
+}

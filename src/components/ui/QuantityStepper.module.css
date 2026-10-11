@@ -1,0 +1,66 @@
+/* src/components/ui/QuantityStepper.module.css */
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 2px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-pill);
+  background-color: var(--bg-subtle);
+}
+
+.button {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background-color: var(--bg-surface);
+  color: var(--brand-blue);
+  font-size: 16px;
+  box-shadow: var(--shadow-xs);
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.button:hover {
+  background-color: var(--brand-blue);
+  color: #FFFFFF;
+}
+
+.button:active {
+  transform: scale(0.92);
+}
+
+.button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.value {
+  min-width: 28px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--text-1);
+}
+
+/* Celular / dedo: botones más grandes */
+.md .button {
+  width: 32px;
+  height: 32px;
+  font-size: 18px;
+}
+
+.sm .button {
+  width: 26px;
+  height: 26px;
+}
+
+.sm .value {
+  min-width: 24px;
+  font-size: var(--fs-sm);
+}

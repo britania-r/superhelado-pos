@@ -1,96 +1,126 @@
 /* src/features/pos/PosPage.module.css */
-.posPage {
+
+/* Pantalla de alto fijo: el buscador y las categorías siempre a la vista,
+   los productos hacen scroll en su zona y el pedido ocupa todo el alto */
+.pos {
+  --pos-height: calc(100dvh - 2 * var(--page-pad));
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: var(--space-lg);
-  height: calc(100vh - (var(--space-xl) * 2));
+  grid-template-columns: minmax(0, 1fr) clamp(300px, 28vw, 380px);
+  grid-template-rows: minmax(0, 1fr);
+  gap: var(--page-pad);
+  height: var(--pos-height);
+  min-height: 460px;
 }
 
-.mainContent {
-  display: flex;
-  flex-direction: column;
-  background-color: var(--color-surface);
-  border-radius: var(--border-radius);
-  padding: var(--space-lg);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden; 
-}
-
-.topSection {
-  flex-shrink: 0;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-lg);
-}
-
-.searchBar {
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  width: 300px;
-}
-
-.categoryNav {
-  display: flex;
+.status {
+  display: grid;
+  place-content: center;
+  justify-items: center;
   gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
-  overflow-x: auto;
-  padding-bottom: var(--space-sm);
+  height: 60vh;
+  color: var(--text-2);
 }
 
-.categoryNav button {
-  background-color: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: 20px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.categoryNav button.active {
-  background-color: var(--color-primary);
-  color: var(--color-text-on-primary);
-  border-color: var(--color-primary);
-}
-
-.productGridContainer {
-  flex-grow: 1; 
-  overflow-y: auto; 
-  padding-right: var(--space-sm); 
-  margin-right: -17px; 
-  padding-right: 17px; 
-}
-
-.sidebar {
-  background-color: var(--color-surface);
-  border-radius: var(--border-radius);
-  padding: var(--space-lg);
-  box-shadow: var(--shadow-sm);
+/* ── Productos ── */
+.catalog {
   display: flex;
   flex-direction: column;
-  overflow-y: auto; 
+  min-width: 0;
+  min-height: 0;
 }
 
-.storeSelector {
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--border-radius);
-  margin-right: var(--space-md);
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: 10px;
+  padding-bottom: 12px;
 }
 
-.missingStoreError {
-  text-align: center;
-  padding: var(--space-xl);
-  background-color: var(--color-surface);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-sm);
-  color: var(--color-error);
-  margin-top: var(--space-lg);
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.titles {
+  min-width: 0;
+}
+
+.title {
+  font-size: 1.625rem;
+  line-height: 1.15;
+}
+
+.subtitle {
+  margin-top: 2px;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.storeSelect {
+  flex-shrink: 0;
+  width: 240px;
+}
+
+/* Zona con scroll; el relleno deja ver el anillo de foco y la sombra al pasar el mouse */
+.products {
+  flex: 1;
+  min-height: 0;
+  margin: 0 -6px;
+  padding: 4px 6px 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+/* ── Pedido ── */
+.cartColumn {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Tablet sin barra lateral: se descuenta la barra superior */
+@media (max-width: 1023.98px) {
+  .pos {
+    --pos-height: calc(100dvh - 56px - env(safe-area-inset-top) - 2 * var(--page-pad));
+  }
+}
+
+/* Pantallas angostas: una columna; el pedido va en una barra fija abajo */
+@media (max-width: 899.98px) {
+  .pos {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* La barra superior ya dice "Punto de venta": aquí solo queda el selector de tienda */
+  .titles {
+    display: none;
+  }
+
+  .heading:not(.hasStoreSelect) {
+    display: none;
+  }
+
+  .storeSelect {
+    width: 100%;
+  }
+
+  .toolbar {
+    gap: 8px;
+    padding-bottom: 8px;
+  }
+
+  .products {
+    margin: 0 -4px;
+    padding: 2px 4px calc(92px + env(safe-area-inset-bottom));
+    scrollbar-gutter: auto;
+  }
+
+  /* El carrito se dibuja como barra fija y hoja; la columna no ocupa lugar */
+  .cartColumn {
+    display: contents;
+  }
 }

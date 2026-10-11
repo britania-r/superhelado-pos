@@ -1,0 +1,75 @@
+/* src/components/ui/Alert.module.css */
+
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  animation: alertIn var(--dur) var(--ease-out);
+}
+
+.icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-size: 20px;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.text {
+  font-size: var(--fs-sm);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.title + .text {
+  margin-top: 2px;
+}
+
+.alert .dismiss {
+  margin: -4px -6px -4px 0;
+  color: inherit;
+}
+
+.info {
+  border-color: rgba(59, 76, 160, 0.25);
+  background-color: var(--brand-blue-50);
+  color: var(--brand-ink);
+}
+
+.info .icon {
+  color: var(--brand-blue);
+}
+
+.success {
+  border-color: rgba(47, 143, 95, 0.25);
+  background-color: var(--success-soft);
+  color: var(--success-ink);
+}
+
+.warning {
+  border-color: rgba(199, 122, 18, 0.3);
+  background-color: var(--warning-soft);
+  color: var(--warning-ink);
+}
+
+.danger {
+  border-color: rgba(200, 54, 75, 0.25);
+  background-color: var(--danger-soft);
+  color: var(--danger-ink);
+}
+
+@keyframes alertIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}

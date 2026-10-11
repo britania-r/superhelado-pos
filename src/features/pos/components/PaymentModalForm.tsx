@@ -1,13 +1,22 @@
 // src/features/pos/components/PaymentModalForm.tsx
 
+import { useMemo, useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useQueryClient } from '@tanstack/react-query';
 import { usePaymentMethods, useStores } from '../../../hooks/queries';
 import { useUserStore } from '../../../store/userStore';
 import { useCartStore } from '../../../store/cartStore';
 import { formatCurrency } from '../../../lib/formatters';
+import { cx } from '../../../lib/cx';
 import { recordSale, SaleError } from '../../../api/sales.api';
 import type { CartItem } from '../../../types';
+import { Field } from '../../../components/ui/Field';
+import { Input } from '../../../components/ui/Input';
+import { Button } from '../../../components/ui/Button';
+import { FormActions } from '../../../components/ui/FormActions';
+import { Alert } from '../../../components/ui/Alert';
+import { EmptyState } from '../../../components/ui/EmptyState';
+import { Spinner } from '../../../components/ui/Spinner';
 import styles from './PaymentModalForm.module.css';
 import toast from 'react-hot-toast';
 
@@ -98,8 +107,28 @@ const printSaleTicket = (saleDetails: {
   setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
 };
 
+/* Ícono según el nombre del método (solo visual) */
+const methodIcon = (name: string) => {
+  const text = name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  if (/efectivo|cash|contado/.test(text)) return 'bx-money';
+  if (/tarjeta|visa|master|credito|debito|pos/.test(text)) return 'bx-credit-card';
+  if (/yape|plin|transfer|qr|billetera|wallet/.test(text)) return 'bx-mobile-alt';
+  return 'bx-wallet';
+};
+
+/* Billetes próximos al total (S/ 15.50 → 20, 50, 100) para no escribir el monto */
+const QUICK_BILLS = [10, 20, 50, 100, 200];
+const getQuickAmounts = (total: number) => {
+  const amounts = new Set<number>();
+  QUICK_BILLS.forEach((bill) => {
+    const rounded = Math.ceil(total / bill) * bill;
+    if (rounded > total) amounts.add(rounded);
+  });
+  return [...amounts].sort((a, b) => a - b).slice(0, 3);
+};
+
 export const PaymentModalForm = ({ onClose, onSaleSuccess, activeStoreId }: PaymentModalFormProps) => {
-  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<PaymentFormData>({
+  const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm<PaymentFormData>({
     defaultValues: { print_receipt: 'no', paid_amount: '' },
   });
 
@@ -107,17 +136,26 @@ export const PaymentModalForm = ({ onClose, onSaleSuccess, activeStoreId }: Paym
   const { data: paymentMethods = [], isLoading: isLoadingMethods } = usePaymentMethods();
   const { data: allStores = [] } = useStores();
 
-  const { items, getTotal, clearCart, removeFromCart, updatePrice } = useCartStore();
+  const { items, getTotal, getTotalItems, clearCart, removeFromCart, updatePrice } = useCartStore();
   const { user } = useUserStore();
+
+  /* Aviso que se queda a la vista si la BD corrigió el pedido (además del toast) */
+  const [notice, setNotice] = useState<string | null>(null);
 
   const totalAmount = getTotal();
   const watchedPaidAmount = watch('paid_amount');
   const paidAmountNumber = typeof watchedPaidAmount === 'number' ? watchedPaidAmount : 0;
   const changeAmount = paidAmountNumber >= totalAmount ? paidAmountNumber - totalAmount : 0;
+  const missingAmount = paidAmountNumber > 0 && paidAmountNumber < totalAmount ? totalAmount - paidAmountNumber : 0;
+  const quickAmounts = useMemo(() => getQuickAmounts(totalAmount), [totalAmount]);
+  const totalItems = getTotalItems();
 
   const currentStoreName = allStores.find(s => s.id === activeStoreId)?.name || 'Tienda Principal';
 
   const refreshPosProducts = () => queryClient.invalidateQueries({ queryKey: ['pos-products'] });
+
+  const setPaidAmount = (amount: number) =>
+    setValue('paid_amount', amount, { shouldValidate: true, shouldDirty: true });
 
   // La BD rechazó la venta: corregimos el carrito y explicamos qué pasó
   const handleSaleError = (err: unknown) => {
@@ -135,11 +173,11 @@ export const PaymentModalForm = ({ onClose, onSaleSuccess, activeStoreId }: Paym
       void refreshPosProducts();
 
       const names = err.products.map((product) => product.name).join(', ');
-      toast.error(
+      const message =
         `Se quitaron del pedido porque ya no están disponibles en esta tienda: ${names}. ` +
-        'Revisa el total y confirma de nuevo.',
-        { duration: 7000 },
-      );
+        'Revisa el total y confirma de nuevo.';
+      toast.error(message);
+      setNotice(message);
 
       if (useCartStore.getState().items.length === 0) onClose();
       return;
@@ -161,11 +199,11 @@ export const PaymentModalForm = ({ onClose, onSaleSuccess, activeStoreId }: Paym
         })
         .join(', ');
 
-      toast.error(
+      const message =
         `Cambió el precio de: ${changes}. El pedido ya tiene los precios nuevos; ` +
-        'revisa el total y confirma de nuevo.',
-        { duration: 7000 },
-      );
+        'revisa el total y confirma de nuevo.';
+      toast.error(message);
+      setNotice(message);
       return;
     }
 
@@ -181,6 +219,8 @@ export const PaymentModalForm = ({ onClose, onSaleSuccess, activeStoreId }: Paym
       toast.error('El carrito está vacío.');
       return;
     }
+
+    setNotice(null);
 
     const finalPaidAmount = (typeof data.paid_amount === 'number' && data.paid_amount >= totalAmount) ? data.paid_amount : totalAmount;
     const finalChangeAmount = finalPaidAmount - totalAmount;
@@ -227,66 +267,136 @@ export const PaymentModalForm = ({ onClose, onSaleSuccess, activeStoreId }: Paym
     }
   };
 
-  if (isLoadingMethods) return <div>Cargando...</div>;
-  if (paymentMethods.length === 0) return <div>No hay métodos de pago configurados.</div>;
+  if (isLoadingMethods) {
+    return (
+      <div className={styles.loading}>
+        <Spinner label="" />
+        Cargando métodos de pago…
+      </div>
+    );
+  }
+
+  if (paymentMethods.length === 0) {
+    return (
+      <EmptyState
+        icon="bx-credit-card"
+        title="No hay métodos de pago configurados"
+        description="Agrégalos en Gestión › Métodos de pago."
+      />
+    );
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-      <div className={styles.formGroup}>
-        <label>Método de Pago</label>
-        <div className={styles.paymentMethodButtons}>
+    <form onSubmit={handleSubmit(onSubmit)} className={styles.form} noValidate>
+      {notice && (
+        <Alert tone="warning" title="Revisa el pedido" onDismiss={() => setNotice(null)}>
+          {notice}
+        </Alert>
+      )}
+
+      {/* ── Total ── */}
+      <div className={styles.totalCard}>
+        <span className={styles.totalLabel}>Total a cobrar</span>
+        <span className={styles.totalValue}>{formatCurrency(totalAmount)}</span>
+        <span className={styles.totalMeta}>
+          {totalItems === 1 ? '1 producto' : `${totalItems} productos`} · {currentStoreName}
+        </span>
+      </div>
+
+      {/* ── Método de pago ── */}
+      <fieldset className={styles.fieldset}>
+        <legend className={styles.legend}>Método de pago</legend>
+        <div className={styles.methods}>
           {paymentMethods.map(method => (
-            <label key={method.id} className={styles.paymentMethodLabel}>
-              <input type="radio" {...register('payment_method_id', { required: true, valueAsNumber: true })} value={method.id} defaultChecked={method.id === paymentMethods[0]?.id} />
-              <span className={styles.paymentMethodName}>{method.name}</span>
+            <label key={method.id} className={styles.method}>
+              <input
+                type="radio"
+                className={styles.methodInput}
+                {...register('payment_method_id', { required: true, valueAsNumber: true })}
+                value={method.id}
+                defaultChecked={method.id === paymentMethods[0]?.id}
+              />
+              <span className={styles.methodTile}>
+                <i className={cx('bx', methodIcon(method.name), styles.methodIcon)} aria-hidden="true" />
+                <span className={styles.methodName}>{method.name}</span>
+                <i className={cx('bx bxs-check-circle', styles.methodCheck)} aria-hidden="true" />
+              </span>
             </label>
           ))}
         </div>
+      </fieldset>
+
+      {/* ── Paga con y cambio ── */}
+      <div className={styles.cashRow}>
+        <Field
+          label="Paga con"
+          htmlFor="paid_amount"
+          error={errors.paid_amount?.message}
+          hint="Opcional. Si lo dejas vacío se cobra el total exacto."
+          className={styles.paidField}
+        >
+          <Input
+            id="paid_amount"
+            type="number"
+            step="0.01"
+            inputMode="decimal"
+            size="lg"
+            prefixText="S/"
+            placeholder="0.00"
+            {...register('paid_amount', {
+              valueAsNumber: true,
+              min: { value: totalAmount, message: 'El pago debe ser mayor o igual al total.' },
+            })}
+          />
+        </Field>
+
+        <div className={styles.changeField} aria-live="polite">
+          <span className={styles.changeLabel}>{missingAmount > 0 ? 'Falta' : 'Cambio'}</span>
+          <span
+            className={cx(styles.change, changeAmount > 0 && styles.changePositive, missingAmount > 0 && styles.changeMissing)}
+          >
+            {formatCurrency(missingAmount > 0 ? missingAmount : changeAmount)}
+          </span>
+        </div>
       </div>
 
-      <div className={styles.infoField}>
-        <span>Total de la Venta:</span>
-        <span className={styles.totalAmount}>{formatCurrency(totalAmount)}</span>
+      <div className={styles.quickAmounts} role="group" aria-label="Montos rápidos">
+        <button type="button" className={styles.quickButton} onClick={() => setPaidAmount(totalAmount)}>
+          Exacto
+        </button>
+        {quickAmounts.map((amount) => (
+          <button key={amount} type="button" className={styles.quickButton} onClick={() => setPaidAmount(amount)}>
+            {formatCurrency(amount)}
+          </button>
+        ))}
       </div>
 
-      <div className={styles.formGroup}>
-        <label htmlFor="paid_amount">Pago Con</label>
-        <input
-          id="paid_amount"
-          type="number"
-          step="0.01"
-          {...register('paid_amount', {
-            valueAsNumber: true,
-            min: { value: totalAmount, message: 'El pago debe ser mayor o igual al total.' },
-          })}
-          className={styles.input}
-          placeholder="(Opcional)"
-        />
-        {errors.paid_amount && <span className={styles.errorText}>{errors.paid_amount.message}</span>}
-      </div>
-
-      <div className={styles.infoField}>
-        <span>Cambio:</span>
-        <span className={styles.changeAmount}>{formatCurrency(changeAmount)}</span>
-      </div>
-
-      <div className={styles.formGroup}>
-        <label>Imprimir Ticket</label>
-        <div className={styles.printOptions}>
-          <label className={styles.radioLabel}>
-            <input type="radio" {...register('print_receipt')} value="yes" />
-            <span>Sí</span>
-          </label>
-          <label className={styles.radioLabel}>
-            <input type="radio" {...register('print_receipt')} value="no" />
+      {/* ── Ticket ── */}
+      <div className={styles.printRow}>
+        <span className={styles.printLabel} id="print-receipt-label">
+          <i className="bx bx-printer" aria-hidden="true" />
+          Imprimir ticket
+        </span>
+        <div className={styles.toggle} role="radiogroup" aria-labelledby="print-receipt-label">
+          <label className={styles.toggleOption}>
+            <input type="radio" className={styles.toggleInput} {...register('print_receipt')} value="no" />
             <span>No</span>
+          </label>
+          <label className={styles.toggleOption}>
+            <input type="radio" className={styles.toggleInput} {...register('print_receipt')} value="yes" />
+            <span>Sí</span>
           </label>
         </div>
       </div>
 
-      <button type="submit" disabled={isSubmitting || items.length === 0} className={styles.submitButton}>
-        {isSubmitting ? 'Procesando...' : 'Confirmar Venta'}
-      </button>
+      <FormActions>
+        <Button variant="secondary" onClick={onClose} disabled={isSubmitting}>
+          Cancelar
+        </Button>
+        <Button type="submit" icon="bx-check" loading={isSubmitting} disabled={items.length === 0}>
+          Confirmar venta
+        </Button>
+      </FormActions>
     </form>
   );
 };

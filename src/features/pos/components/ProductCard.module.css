@@ -1,76 +1,164 @@
 /* src/features/pos/components/ProductCard.module.css */
 
 .card {
-  background-color: #fff;
-  border-radius: 1rem; 
-  box-shadow: var(--shadow-sm);
-  cursor: pointer;
-  /* --- MODIFICADO: Eliminar transition de transform si no queremos que cause z-index issues --- */
-  transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out; /* Sin transform */
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  /* --- MODIFICADO: Eliminar position y z-index --- */
-  /* position: relative; */ /* ELIMINADO */
-  /* z-index: 0; */ /* ELIMINADO */
-}
-
-.card:hover {
-  /* --- MODIFICADO: Eliminar transform y z-index --- */
-  /* transform: translateY(-2px); */ /* ELIMINADO */
-  box-shadow: var(--shadow-md);
-  border-color: #e6e4e4; 
-  /* z-index: 1; */ /* ELIMINADO */
-}
-
-.image {
+  gap: 6px;
   width: 100%;
-  height: 130px; 
-  object-fit: fit; 
-  padding: 0; 
-  background-color: #f9f9f9; 
+  min-width: 0;
+  padding: 8px 8px 10px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-xs);
+  color: var(--text-1);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease-out);
 }
 
-.info {
-  padding: var(--space-xs) var(--space-md); 
-  text-align: center;
-  border-top: 1px solid var(--color-border);
+.card:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Al tocar: se "hunde" un poco */
+.card:active {
+  transform: scale(0.97);
+}
+
+/* Ya está en el pedido */
+.inCart {
+  border-color: var(--brand-pink);
+  box-shadow: 0 0 0 1px var(--brand-pink), var(--shadow-xs);
+}
+
+.media {
+  position: relative;
+  display: block;
+}
+
+.media .image {
+  border-radius: var(--radius-md);
+}
+
+/* Burbuja con la cantidad en el pedido */
+.quantity {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 7px;
+  border-radius: var(--radius-pill);
+  background-color: var(--brand-pink);
+  color: var(--brand-ink);
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(35, 42, 92, 0.22);
+  animation: pop var(--dur-slow) var(--ease-out);
+}
+
+/* "+" sobre la imagen: aparece al pasar el mouse; en pantallas táctiles siempre */
+.add {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: var(--brand-blue);
+  color: #FFFFFF;
+  font-size: 20px;
+  box-shadow: 0 2px 8px rgba(35, 42, 92, 0.28);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-out);
+}
+
+.card:focus-visible .add {
+  opacity: 1;
+  transform: none;
 }
 
 .name {
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-bottom: var(--space-xs);
-  color: var(--color-text-primary);
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;  
+  min-height: 2.6em;
+  padding: 0 2px;
   overflow: hidden;
-  text-overflow: ellipsis;
-  min-height: 2.7em; 
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 .price {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--color-primary);
+  margin-top: auto;
+  padding: 0 2px;
+  color: var(--brand-blue);
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
-.imagePlaceholder {
-  height: 130px; 
-  width: 100%;
-  aspect-ratio: 1 / 1; /* Mantiene la forma cuadrada igual que la imagen */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--color-background-soft); /* Un color de fondo suave */
-  border-radius: var(--border-radius); /* El mismo borde redondeado que la imagen */
-  overflow: hidden;
+@media (hover: hover) {
+  .card:hover {
+    border-color: rgba(59, 76, 160, 0.35);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .inCart:hover {
+    border-color: var(--brand-pink);
+    box-shadow: 0 0 0 1px var(--brand-pink), var(--shadow-md);
+  }
+
+  .card:hover .add {
+    opacity: 1;
+    transform: none;
+  }
+
+  .card:active {
+    transform: scale(0.97);
+  }
 }
 
-/* Estilo para el icono de Boxicons dentro del placeholder */
-.imagePlaceholder i {
-  font-size: 56px; /* Un tamaño grande para el icono */
-  color: var(--color-text-secondary); /* Un color sutil que no distraiga */
+@media (hover: none) {
+  .add {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: 6px 6px 8px;
+  }
+
+  .name {
+    font-size: var(--fs-md);
+  }
+
+  .add {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+@keyframes pop {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.18); }
+  100% { transform: scale(1); }
 }

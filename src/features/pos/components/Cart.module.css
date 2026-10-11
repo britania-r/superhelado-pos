@@ -1,296 +1,343 @@
 /* src/features/pos/components/Cart.module.css */
+
+/* ════════════════════════════════════════════════════════════════
+   Panel (computadora)
+   ════════════════════════════════════════════════════════════════ */
+
 .cart {
-  background-color: var(--color-surface);
-  border-radius: var(--border-radius);
-  padding: var(--space-lg);
-  box-shadow: var(--shadow-sm);
   display: flex;
+  flex: 1;
   flex-direction: column;
-  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-xl);
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .header {
   display: flex;
+  align-items: flex-start;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-lg);
-  padding-bottom: var(--space-md);
-  border-bottom: 1px solid var(--color-border);
-  position: relative; 
+  gap: var(--space-sm);
+  flex-shrink: 0;
+  padding: 14px 12px 12px 16px;
+  border-bottom: 1px solid var(--border-1);
 }
 
-.header h3 {
-  margin: 0;
-  flex-grow: 1; 
-  text-align: left;
+.headings {
+  min-width: 0;
 }
 
-/* --- MODIFICADO: Estilos para el botón de vaciar carrito --- */
-.clearCartButton {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 2rem; /* Más grande */
-  color: var(--color-text-secondary);
-  transition: color 0.2s;
-  padding: var(--space-xs);
-  flex-shrink: 0; 
-  /* --- AÑADIDO: Posicionamiento absoluto para centrarlo y separarlo de la fecha --- */
-  position: absolute;
-  top: 50%;
-  right: calc(50% - 3rem); /* Centrado horizontalmente (50% del ancho del padre - mitad de su propio ancho) */
-  transform: translateY(-50%);
+.title {
+  font-size: var(--fs-xl);
+  line-height: 1.2;
 }
 
-.clearCartButton:hover {
-  color: var(--color-error);
+.meta {
+  margin-top: 2px;
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
 }
 
-.clearCartButton:disabled {
-  color: var(--color-border);
-  cursor: not-allowed;
+.body {
+  flex: 1;
+  min-height: 0;
+  padding: 2px 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
-
-.dateTime {
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
-  text-align: right;
-  flex-shrink: 0; 
-  margin-left: auto; 
+.footer {
+  flex-shrink: 0;
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--border-1);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  background-color: var(--bg-subtle);
 }
 
-.dateTime span {
-  display: block;
-}
+/* ════════════════════════════════════════════════════════════════
+   Ítems
+   ════════════════════════════════════════════════════════════════ */
 
 .itemList {
-  flex-grow: 1;
-  overflow-y: auto;
-  margin: 0 -1rem;
-  padding: 0 1rem;
-}
-
-.emptyMessage {
-  text-align: center;
-  color: var(--color-text-secondary);
-  padding: var(--space-xl) 0;
+  list-style: none;
 }
 
 .item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm);
-  border-bottom: 1px solid var(--color-border);
-  transition: background-color 0.2s;
-  border-radius: var(--border-radius);
-  margin-bottom: var(--space-xs);
-}
-
-.item:hover {
-  background-color: var(--color-bg);
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  grid-template-areas:
+    'image info remove'
+    'image controls controls';
+  align-items: start;
+  column-gap: 10px;
+  row-gap: 6px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-1);
+  animation: itemIn var(--dur) var(--ease-out);
 }
 
 .item:last-child {
   border-bottom: none;
 }
 
-.item img {
-  width: 40px;
-  height: 40px;
-  object-fit: fill;
-  border-radius: var(--border-radius);
-  flex-shrink: 0;
+.itemImage {
+  grid-area: image;
 }
 
 .itemInfo {
-  flex-grow: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  grid-area: info;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .itemName {
-  display: block;
+  font-size: var(--fs-sm);
   font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .itemPrice {
-  color: var(--color-text-secondary);
-  font-size: 0.9rem;
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
 }
 
-.quantityControl {
+.item .removeButton {
+  grid-area: remove;
+  margin: -4px -4px 0 0;
+}
+
+.itemControls {
+  grid-area: controls;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-sm);
-  background-color: #fff;
-  border: 1px solid var(--color-border);
-  border-radius: 20px;
-  margin-left: auto;
-  flex-shrink: 0;
 }
 
-.quantityControl button {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 1.2rem;
-  font-weight: bold;
-  width: 30px;
-  height: 30px;
-  color: var(--color-primary);
+.itemTotal {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
 }
 
-.quantityControl span {
-  font-weight: 600;
-  min-width: 20px;
+/* ── Vacío ── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 220px;
+  height: 100%;
+  padding: var(--space-xl) var(--space-md);
+  color: var(--text-2);
   text-align: center;
 }
 
-.deleteButton {
-  background: none;
-  border: none;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  font-size: 1.2rem;
-  padding: var(--space-xs);
-  margin-left: var(--space-sm);
-  transition: color 0.2s;
-  flex-shrink: 0;
+.emptyIcon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 8px;
+  border-radius: 50%;
+  background-color: var(--brand-pink-soft);
+  color: var(--brand-magenta);
+  font-size: 30px;
 }
 
-.deleteButton:hover {
-  color: var(--color-error);
+.emptyTitle {
+  font-weight: 700;
+  color: var(--text-1);
 }
+
+.emptyText {
+  font-size: var(--fs-sm);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Total y botón Cobrar (panel y hoja)
+   ════════════════════════════════════════════════════════════════ */
 
 .summary {
-  margin-top: auto;
-  padding-top: var(--space-lg);
-  border-top: 1px dashed var(--color-border);
-}
-
-.summaryLine {
   display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.totalRow {
+  display: flex;
+  align-items: baseline;
   justify-content: space-between;
-  margin-bottom: var(--space-md);
-  font-size: 1rem;
+  gap: var(--space-sm);
 }
 
-.summaryLine span:first-child {
-  color: var(--color-text-secondary);
-}
-
-.summaryLine span:last-child {
+.totalLabel {
   font-weight: 600;
+  color: var(--text-2);
 }
 
-.total {
-  font-size: 1.2rem;
-  font-weight: bold;
+.totalItems {
+  font-size: var(--fs-xs);
+  font-weight: 500;
 }
 
-.total span {
-  color: var(--color-text-primary) !important;
-}
-
-.placeOrderButton {
-  width: 100%;
-  padding: var(--space-md);
-  background-color: var(--color-primary);
-  color: var(--color-text-on-primary);
-  border: none;
-  border-radius: var(--border-radius);
-  font-size: 1.1rem;
+.totalAmount {
+  color: var(--brand-ink);
+  font-family: var(--font-display);
+  font-size: 1.75rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
-.placeOrderButton:disabled {
-  background-color: var(--color-primary-light);
-  cursor: not-allowed;
+/* ════════════════════════════════════════════════════════════════
+   Barra fija abajo (celular y tablet angosta)
+   ════════════════════════════════════════════════════════════════ */
+
+.bar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-sticky);
+  padding: 10px 8px calc(8px + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, var(--bg-page) 55%, rgba(252, 250, 241, 0));
+  pointer-events: none;
 }
 
-.placeOrderButton:hover:not(:disabled) {
-  background-color: var(--color-primary-dark);
-}
-
-/* Estilos para el modal de confirmación de vaciar carrito */
-.confirmContent {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-lg);
-    text-align: center;
-    padding: var(--space-md);
-}
-
-.confirmContent p {
-    font-size: 1.1rem;
-    color: var(--color-text-primary);
-}
-
-.confirmActions {
-    display: flex;
-    justify-content: center;
-    gap: var(--space-md);
-}
-
-.cancelButton, .confirmButton {
-    padding: 0.75rem 1.5rem;
-    border-radius: var(--border-radius);
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.cancelButton {
-    background-color: var(--color-bg);
-    color: var(--color-text-secondary);
-    border: 1px solid var(--color-border);
-}
-.cancelButton:hover {
-    background-color: var(--color-border);
-}
-
-.confirmButton {
-    background-color: var(--color-error);
-    color: var(--color-text-on-primary);
-}
-.confirmButton:hover {
-    background-color: #f47373;
-}
-
-/* FILE: src/features/pos/components/Cart.module.css */
-/* DESC: Añade estas clases al final del archivo. */
-
-/* Asegúrate de que tu estilo de imagen original se llame así */
-.itemImage {
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: var(--border-radius-sm);
-}
-
-/* Estilo para el contenedor del icono cuando no hay imagen */
-.itemImagePlaceholder {
-  width: 50px;
-  height: 50px;
+.barButton {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background-color: var(--color-background-soft);
-  border-radius: var(--border-radius-sm);
-  flex-shrink: 0; /* Evita que se encoja */
+  gap: 12px;
+  width: 100%;
+  min-height: 62px;
+  padding: 8px 14px 8px 9px;
+  border: none;
+  border-radius: var(--radius-xl);
+  background-color: var(--brand-blue);
+  color: #FFFFFF;
+  box-shadow: var(--shadow-lg);
+  text-align: left;
+  pointer-events: auto;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform var(--dur-fast) var(--ease-out), background-color var(--dur) var(--ease-out);
 }
 
-/* Estilo para el icono de Boxicons dentro del placeholder */
-.itemImagePlaceholder i {
-  font-size: 24px; /* Un tamaño adecuado para el carrito */
-  color: var(--color-text-secondary);
+.barButton:active {
+  transform: scale(0.98);
+  background-color: var(--brand-blue-active);
+}
+
+.barButton:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring), var(--shadow-lg);
+}
+
+.barIcon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  background-color: rgba(255, 255, 255, 0.14);
+  font-size: 24px;
+}
+
+.barCount {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background-color: var(--brand-pink);
+  color: var(--brand-ink);
+  font-size: 12px;
+  font-weight: 700;
+  animation: pop var(--dur-slow) var(--ease-out);
+}
+
+.barText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.2;
+}
+
+.barLabel {
+  font-size: var(--fs-sm);
+  opacity: 0.85;
+}
+
+.barTotal {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.barAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.barAction i {
+  font-size: 20px;
+}
+
+/* Dentro de la hoja: "3 productos · Vaciar" */
+.sheetToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: 2px;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.sheetToolbar .clearButton {
+  margin-right: -8px;
+  color: var(--danger);
+}
+
+/* En la hoja del celular: nombres un poco más grandes y vacío más bajo */
+@media (max-width: 899.98px) {
+  .itemName {
+    font-size: var(--fs-md);
+  }
+
+  .empty {
+    min-height: 180px;
+  }
+}
+
+@keyframes itemIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes pop {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.18); }
+  100% { transform: scale(1); }
 }

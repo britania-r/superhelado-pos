@@ -1,24 +1,31 @@
 // src/features/pos/PosPage.tsx
 
-import { useState, useMemo, useEffect, type CSSProperties } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useCategories, useStores, usePosProducts } from '../../hooks/queries';
 import { useCartStore } from '../../store/cartStore';
 import { useUserStore } from '../../store/userStore';
+import { cx } from '../../lib/cx';
+import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
+import { EmptyState } from '../../components/ui/EmptyState';
+import { Button } from '../../components/ui/Button';
+import { Input } from '../../components/ui/Input';
+import { Spinner } from '../../components/ui/Spinner';
+import { SearchableSelect, type SelectOption } from '../../components/ui/SearchableSelect';
+import { ChipGroup, type ChipOption } from '../../components/ui/ChipGroup';
 import { ProductGrid } from './components/ProductGrid';
 import { Cart } from './components/Cart';
 import styles from './PosPage.module.css';
 
-const statusTextStyle: CSSProperties = {
-  padding: 'var(--space-lg)',
-  textAlign: 'center',
-  color: 'var(--color-text-secondary)',
-};
+/* Valor de "Todos" en las categorías (los ids de categoría son números) */
+const ALL_CATEGORIES = 'all';
 
 export const PosPage = () => {
   const { profile, user, isLoading: isProfileLoading } = useUserStore();
 
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  /* Tienda elegida que espera confirmación (cambiar de tienda vacía el pedido) */
+  const [pendingStoreId, setPendingStoreId] = useState<string | null>(null);
 
   // El carrito sabe a qué tienda pertenece el pedido (así no se mezclan precios)
   const cartStoreId = useCartStore((state) => state.storeId);
@@ -71,94 +78,176 @@ export const PosPage = () => {
   const handleStoreChange = (newStoreId: string) => {
     if (newStoreId === effectiveStoreId) return;
 
-    if (
-      cartItemCount > 0 &&
-      !window.confirm('Cambiar de tienda vaciará el pedido actual. ¿Deseas continuar?')
-    ) {
-      return; // El <select> es controlado: vuelve solo a la tienda anterior
+    // Con productos en el pedido, primero se confirma. El selector es controlado:
+    // mientras tanto sigue mostrando la tienda anterior.
+    if (cartItemCount > 0) {
+      setPendingStoreId(newStoreId);
+      return;
     }
 
     setCartStore(newStoreId);
   };
 
-  if (isProfileLoading || isLoadingStores) return <div>Cargando Punto de Venta...</div>;
+  const confirmStoreChange = () => {
+    if (pendingStoreId) setCartStore(pendingStoreId);
+    setPendingStoreId(null);
+  };
+
+  const storeOptions = useMemo<SelectOption[]>(
+    () => stores.map((store) => ({ value: store.id, label: store.name, icon: 'bx-store-alt' })),
+    [stores]
+  );
+
+  const categoryOptions = useMemo<ChipOption<string>[]>(
+    () => [
+      { value: ALL_CATEGORIES, label: 'Todos' },
+      ...categories.map((category) => ({ value: String(category.id), label: category.name })),
+    ],
+    [categories]
+  );
+
+  if (isProfileLoading || isLoadingStores) {
+    return (
+      <div className={styles.status}>
+        <Spinner size="lg" label="" />
+        <p>Cargando punto de venta…</p>
+      </div>
+    );
+  }
 
   if (!profile || (profile.role === 'vendedor' && !profile.store_id)) {
     return (
-      <div className={styles.missingStoreError}>
-        <p>No se puede cargar el Punto de Venta.</p>
-        <p>Asegúrate de que tu usuario tenga una tienda asignada.</p>
-      </div>
+      <EmptyState
+        tone="danger"
+        icon="bx-store-alt"
+        title="No se puede cargar el punto de venta"
+        description="Asegúrate de que tu usuario tenga una tienda asignada."
+      />
     );
   }
 
   if (!effectiveStoreId) {
     return (
-      <div className={styles.missingStoreError}>
-        <p>No hay tiendas disponibles.</p>
-        <p>Crea al menos una tienda en "Gestión de Tiendas".</p>
-      </div>
+      <EmptyState
+        icon="bx-store-alt"
+        title="No hay tiendas disponibles"
+        description="Crea al menos una tienda en Gestión › Tiendas."
+      />
     );
   }
 
-  return (
-    <div className={styles.posPage}>
-      <div className={styles.mainContent}>
-        <div className={styles.topSection}>
-          <header className={styles.header}>
-            <h2>Productos</h2>
-            {profile.role === 'admin' && (
-              <select
-                className={styles.storeSelector}
-                value={effectiveStoreId}
-                onChange={(e) => handleStoreChange(e.target.value)}
-              >
-                {stores.map((store) => (
-                  <option key={store.id} value={store.id}>{store.name}</option>
-                ))}
-              </select>
-            )}
-            <input
-              type="search"
-              placeholder="Buscar producto..."
-              className={styles.searchBar}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </header>
+  const isAdmin = profile.role === 'admin';
+  const storeName = stores.find((store) => store.id === effectiveStoreId)?.name;
+  const hasFilters = searchTerm !== '' || activeCategory !== null;
+  const productCount = isLoadingProducts
+    ? 'Cargando…'
+    : `${products.length} ${products.length === 1 ? 'producto' : 'productos'}`;
 
-          <nav className={styles.categoryNav}>
-            <button onClick={() => setActiveCategory(null)} className={activeCategory === null ? styles.active : ''}>
-              Todos
-            </button>
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={activeCategory === cat.id ? styles.active : ''}
-              >
-                {cat.name}
-              </button>
-            ))}
-          </nav>
+  const clearFilters = () => {
+    setSearchTerm('');
+    setActiveCategory(null);
+  };
+
+  return (
+    <div className={styles.pos}>
+      <section className={styles.catalog} aria-label="Productos">
+        <div className={styles.toolbar}>
+          <div className={cx(styles.heading, isAdmin && styles.hasStoreSelect)}>
+            <div className={styles.titles}>
+              <h1 className={styles.title}>Punto de venta</h1>
+              <p className={styles.subtitle}>
+                {isAdmin ? productCount : `${storeName ?? 'Tienda'} · ${productCount}`}
+              </p>
+            </div>
+            {isAdmin && (
+              <SearchableSelect
+                options={storeOptions}
+                value={effectiveStoreId}
+                onChange={handleStoreChange}
+                icon="bx-store-alt"
+                label="Tienda"
+                searchPlaceholder="Buscar tienda…"
+                emptyMessage="No hay tiendas con ese nombre"
+                className={styles.storeSelect}
+              />
+            )}
+          </div>
+
+          <Input
+            type="search"
+            icon="bx-search"
+            placeholder="Buscar producto…"
+            aria-label="Buscar producto"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onClear={() => setSearchTerm('')}
+          />
+
+          <ChipGroup
+            options={categoryOptions}
+            value={activeCategory === null ? ALL_CATEGORIES : String(activeCategory)}
+            onChange={(value) => setActiveCategory(value === ALL_CATEGORIES ? null : Number(value))}
+            ariaLabel="Categorías"
+          />
         </div>
 
-        <div className={styles.productGridContainer}>
-          {isLoadingProducts ? (
-            <p style={statusTextStyle}>Cargando productos...</p>
-          ) : isProductsError && products.length === 0 ? (
-            <p style={{ ...statusTextStyle, color: 'var(--color-error)' }}>
-              No se pudieron cargar los productos{productsError ? `: ${productsError.message}` : ''}.
-            </p>
+        <div className={styles.products}>
+          {isProductsError && products.length === 0 ? (
+            <EmptyState
+              tone="danger"
+              icon="bx-error-circle"
+              title="No se pudieron cargar los productos"
+              description={productsError?.message}
+            />
           ) : (
-            <ProductGrid products={productsToDisplay} onAddToCart={addToCart} activeStoreId={effectiveStoreId} />
+            <ProductGrid
+              products={productsToDisplay}
+              onAddToCart={addToCart}
+              activeStoreId={effectiveStoreId}
+              loading={isLoadingProducts}
+              empty={
+                hasFilters ? (
+                  <EmptyState
+                    icon="bx-search-alt"
+                    title="Sin resultados"
+                    description={
+                      searchTerm
+                        ? 'No hay productos que coincidan con la búsqueda.'
+                        : 'No se encontraron productos en esta categoría.'
+                    }
+                    action={
+                      <Button variant="secondary" icon="bx-grid-alt" onClick={clearFilters}>
+                        Ver todos
+                      </Button>
+                    }
+                  />
+                ) : (
+                  <EmptyState
+                    icon="bx-package"
+                    title="Esta tienda no tiene productos a la venta"
+                    description="Asigna productos o hazlos visibles en Gestión › Productos."
+                  />
+                )
+              }
+            />
           )}
         </div>
-      </div>
+      </section>
 
-      <aside className={styles.sidebar}>
+      <aside className={styles.cartColumn}>
         <Cart activeStoreId={effectiveStoreId} />
       </aside>
+
+      <ConfirmDialog
+        isOpen={!!pendingStoreId}
+        title="¿Cambiar de tienda?"
+        message="Cambiar de tienda vaciará el pedido actual."
+        confirmLabel="Cambiar y vaciar"
+        tone="danger"
+        icon="bx-store-alt"
+        onConfirm={confirmStoreChange}
+        onCancel={() => setPendingStoreId(null)}
+      />
     </div>
   );
 };

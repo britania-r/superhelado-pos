@@ -1,26 +1,83 @@
 /* src/features/pos/components/ProductGrid.module.css */
-.grid {
-  /* --- MODIFICADO: Forzamos exactamente 5 columnas de igual ancho --- */
-  display: grid;
-  grid-template-columns: repeat(5, 1fr); 
-  
-  gap: var(--space-md);
-  
-  /* --- ELIMINADO: Overflow-y y padding-right no van aquí, van en el padre (productGridContainer) --- */
-  /* overflow-y: scroll; */
-  /* padding-right: var(--space-sm); */
 
-  flex-grow: 1; /* Esto es para el layout flex del padre */
-  justify-content: flex-start;
-  align-content: flex-start;
+/* Las columnas dependen del ancho de la zona de productos (no de la pantalla):
+   así funciona igual con la barra lateral abierta, cerrada o sin ella */
+.container {
+  container-type: inline-size;
 }
 
-.empty {
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-content: start;
+  gap: 8px;
+}
+
+@container (min-width: 520px) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+@container (min-width: 700px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* Computadora: 5 columnas */
+@container (min-width: 860px) {
+  .grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+/* Monitores muy anchos */
+@container (min-width: 1400px) {
+  .grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+/* ── Carga ── */
+.skeletonCard {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: var(--color-text-secondary);
-  font-style: italic;
-  grid-column: 1 / -1; /* Ocupa todas las columnas del grid */
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 8px 12px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-surface);
+}
+
+.skeletonImage,
+.skeletonLine,
+.skeletonPrice {
+  display: block;
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, #EFECE1 25%, #F8F6EE 50%, #EFECE1 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.3s linear infinite;
+}
+
+.skeletonImage {
+  aspect-ratio: 1;
+}
+
+.skeletonLine {
+  width: 80%;
+  height: 12px;
+  border-radius: var(--radius-pill);
+}
+
+.skeletonPrice {
+  width: 45%;
+  height: 16px;
+  border-radius: var(--radius-pill);
+}
+
+@keyframes shimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
 }

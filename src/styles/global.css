@@ -12,6 +12,8 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Celular: sin el recuadro celeste que el navegador pinta al tocar */
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* 2. Base */
@@ -50,6 +52,23 @@ select,
 textarea {
   font: inherit;
   color: inherit;
+}
+
+/* Botones y controles al tocarlos en el celular:
+   sin seleccionar su texto con toques rápidos (se pintaba de celeste),
+   sin el menú de "mantener presionado" y sin zoom por doble toque */
+button,
+[role='button'],
+[role='radio'],
+[role='tab'],
+[role='option'],
+[role='switch'],
+[role='checkbox'],
+label {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  touch-action: manipulation;
 }
 
 /* height: auto: los atributos width/height solo reservan la proporción */

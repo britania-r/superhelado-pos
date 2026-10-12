@@ -1,0 +1,130 @@
+/* src/components/pwa/InstallBanner.module.css */
+
+/* Tarjeta flotante: queda debajo del menú móvil y de los modales */
+.banner {
+  position: fixed;
+  z-index: calc(var(--z-drawer) - 2);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-1);
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-lg);
+  animation: banner-in var(--dur-slow) var(--ease-out);
+}
+
+.icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: fill;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.description {
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+}
+
+.description strong {
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.inlineIcon {
+  font-size: 16px;
+  vertical-align: -3px;
+  color: var(--brand-blue);
+}
+
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Computadora: abajo a la izquierda, junto al menú ── */
+.layout {
+  bottom: 16px;
+  left: calc(var(--sidebar-w, 0px) + 16px);
+  width: min(480px, calc(100vw - var(--sidebar-w, 0px) - 32px));
+}
+
+.login {
+  bottom: 16px;
+  left: 16px;
+  width: min(480px, calc(100vw - 32px));
+}
+
+/* ── Celular y tablet ── */
+@media (max-width: 1023.98px) {
+  /* Dentro de la app va arriba, debajo de la barra superior:
+     así no tapa la barra del carrito del punto de venta */
+  .layout {
+    top: calc(56px + env(safe-area-inset-top) + 8px);
+    right: 8px;
+    bottom: auto;
+    left: 8px;
+    width: auto;
+    animation-name: banner-in-top;
+  }
+
+  .login {
+    right: 8px;
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    left: 8px;
+    width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .banner {
+    flex-wrap: wrap;
+  }
+
+  /* En pantallas angostas los botones bajan a su propia fila */
+  .actions {
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  .banner:has(.actions > :only-child) .actions {
+    width: auto;
+  }
+
+  .banner:has(.actions > :only-child) {
+    flex-wrap: nowrap;
+  }
+}
+
+@keyframes banner-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes banner-in-top {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}

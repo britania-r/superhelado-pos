@@ -8,6 +8,7 @@ import { isAnyModalOpen } from '../../lib/modalStack';
 import { DESKTOP_QUERY, useMediaQuery } from '../../hooks/useMediaQuery';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
+import { InstallBanner } from '../pwa/InstallBanner';
 import styles from './MainLayout.module.css';
 
 const COLLAPSED_KEY = 'chepys.sidebar.collapsed';
@@ -76,6 +77,8 @@ export const MainLayout = () => {
       <main className={styles.content}>
         <Outlet />
       </main>
+
+      <InstallBanner placement="layout" />
     </div>
   );
 };

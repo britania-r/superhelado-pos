@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../store/userStore';
 import { Logo } from '../../components/ui/Logo';
 import { LoginForm } from './components/LoginForm';
+import { InstallBanner } from '../../components/pwa/InstallBanner';
 import styles from './LoginPage.module.css';
 
 export const LoginPage = () => {
@@ -56,6 +57,8 @@ export const LoginPage = () => {
         </div>
         <p className={styles.footer}>© {new Date().getFullYear()} Helados Chepys</p>
       </main>
+
+      <InstallBanner placement="login" />
     </div>
   );
 };

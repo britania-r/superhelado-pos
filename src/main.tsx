@@ -7,6 +7,11 @@ import './index.css';
 import './styles/_variables.css';
 import './styles/global.css';
 import App from './App.tsx';
+// Escucha el aviso de instalación desde el inicio (puede llegar antes que el banner)
+import './pwa/installPrompt';
+import { registerServiceWorker } from './pwa/registerServiceWorker';
+
+registerServiceWorker();
 
 const queryClient = new QueryClient({
   defaultOptions: {

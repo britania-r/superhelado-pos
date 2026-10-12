@@ -29,9 +29,9 @@ export const LoginPage = () => {
 
         <div className={styles.pitch}>
           <p className={styles.headline}>
-            Cada bola,
+            Dulces ventas,
             <br />
-            una sonrisa.
+            cuentas claras.
           </p>
           <p className={styles.pitchText}>
             Registra ventas, controla tu caja y sigue tus tiendas desde un solo lugar.
